@@ -2,12 +2,15 @@
 
 Source for the standalone Arabic RTL web app. Prototype: wudu and prayer are detailed lessons; zakat, fasting and hajj are overview cards only. Not reviewed by a religious scholar.
 
+Content status: verification against printed sources is in progress. `node tools/review.js` currently reports 127 flagged content rows (including rows whose content was partially verified and keeps a declared residual note). Treat any row marked "قيد الاستكمال" or "خارج نطاق هذا الدرس" as unfinished, not as a settled ruling.
+
 ## Files
 - `data.js`: all content (lessons, evidence, school differences, quizzes, reflections, situations). Edit content here.
 - `app.js`: screens, routing, buttons, state, saving, search, quizzes, notes.
 - `style.css`: colors, layout, dark mode.
 - `fonts.css`: Amiri and IBM Plex Sans Arabic embedded as base64 (open fonts, SIL OFL) so the app works offline.
 - `build.py`: joins the four files above into one file, `output/fiqh-alruh.html`.
+- `android/`: minimal Android WebView wrapper (builds the signed APK `fiqh-alruh-android-v0.14.apk` at the repo root; the signing keystore is not part of this repo).
 - `tools/cdp.js`: automated check with headless Chrome (clicks through the screens, checks for errors and sideways scrolling, writes screenshots to `output/`).
 - `tools/pdf.js`: makes a phone-sized PDF of the content, `output/fiqh-alruh-mobile.pdf`.
 
@@ -21,11 +24,14 @@ Source for the standalone Arabic RTL web app. Prototype: wudu and prayer are det
 2. `node tools/cdp.js` expected last lines: `overflow false` and `errs []`.
 3. `node tools/pdf.js` makes `output/fiqh-alruh-mobile.pdf`.
 
+## Android APK
+- `fiqh-alruh-android-v0.14.apk` packages the gen-120 content build. The daily-goal feature published later (gen 121) is in the web source here but NOT inside this APK until the wrapper is rebuilt.
+
 ## Notes
 - Saving: bookmarks, notes, progress and settings are stored in the browser (localStorage) on this device only. If storage is blocked they stay in memory until the page closes and a notice shows. Nothing syncs. Settings has a manual backup: "تجهيز النسخة" shows a text you copy and keep; pasting it back and pressing "استرجاع" (twice) restores notes, bookmarks and progress.
 - Sources: every ruling has a source field in `data.js`. Items not checked against a source are marked "خارج نطاق هذا الدرس" (outside the scope of this lesson). Re-check evidence against published texts before changing it.
 - Deployment: the same single HTML file can be put on any static host. Publication details are not part of this source.
 
 ## Scholar-review handoff
-`node tools/review.js` writes `/downloads/fiqh-alruh-review-handoff.md` from `data.js`: every lesson, its sources, and every school cell that has no documented position. Review comments can be tied to a lesson id and a khilaf row id. The app is an intermediate preview and has not been reviewed by a scholar.
+`node tools/review.js` writes a review handoff markdown file from `data.js`: every lesson, its sources, and every school cell that has no documented position. Review comments can be tied to a lesson id and a khilaf row id. The app is an intermediate preview and has not been reviewed by a scholar.
 Visual checks: `node tools/vis.js` (tablet, dark, large font screenshots). Content checks: `LESSONS=a,b node tools/cdp.js`.
