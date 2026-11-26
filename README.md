@@ -38,7 +38,7 @@ Content status: verification against printed sources is in progress. `node tools
 3. `node tools/pdf.js` makes `output/fiqh-alruh-mobile.pdf`.
 
 ## Android APK
-- Current build: version 0.34 (versionCode 34, built from the merged main, package `app.fiqhalruh`), made with `android/build.sh` from `output/fiqh-alruh.html`. It contains the same content and features as the web build in `docs/index.html` (the GitHub Pages site), after the review-fixes branch was merged into main (calculator removed, adhkar completion feedback with vibration setting, terms key, footer removed, accessibility fixes), including the daily study goal (Settings, then goal; the home screen then shows «هدف اليوم»).
+- Current build: version 0.35 (versionCode 35, built from main d1b3a40, package `app.fiqhalruh`), made with `android/build.sh` from `output/fiqh-alruh.html`. It contains the same content and features as the web build in `docs/index.html` (the GitHub Pages site), after the review-fixes branch was merged into main (calculator removed, adhkar completion feedback with vibration setting, terms key, footer removed, accessibility fixes), including the daily study goal (Settings, then goal; the home screen then shows «هدف اليوم»).
 - `fiqh-alruh-android-v0.14.apk` at the repo root is an old build kept only for history. Do not use it. APK files are signed with a private key that is not in this repo.
 
 ## Notes
