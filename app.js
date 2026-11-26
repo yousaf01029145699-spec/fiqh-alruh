@@ -121,7 +121,7 @@ function vLesson(){
  if(tab==='fiqh'){
   h+='<div class="card"><h3>التعريف</h3><p>'+esc(l.definition)+'</p><h3 style="margin-top:8px">الحكم</h3><p>'+esc(l.hukm)+'</p><div class="ev">'+lk(l.hukmRef)+'</div></div>';
   if(l.pt)h+='<div class="under">'+underPoint(l,{ev:l.hukmEv,kh:l.hukmKh},1)+'</div>';
-  const sec=(t,arr,k)=>'<h2>'+t+' <span class="tag">'+AR(arr.length)+'</span></h2>'+arr.map(c=>infoCard(l,c,k)).join('');
+  const sec=(t,arr,k)=>(k==='n'&&!arr.length)?'':'<h2>'+t+' <span class="tag">'+AR(arr.length)+'</span></h2>'+arr.map(c=>infoCard(l,c,k)).join('');
   h+=sec((l.labels&&l.labels.c)||'الشروط',l.fiqh.conditions,'c')+sec((l.labels&&l.labels.p)||'الأركان',l.fiqh.pillars,'p')+sec((l.labels&&l.labels.o)||'الواجبات',l.fiqh.obligations,'o')+sec((l.labels&&l.labels.s)||'السنن',l.fiqh.sunan,'s')+sec((l.labels&&l.labels.n)||'المبطلات والنواقض',l.fiqh.nullifiers,'n');
   h+=(l.pt?'<details class="allev"><summary><b>جميع أدلة الدرس في موضع واحد</b></summary>':'')+'<h2>الدليل من القرآن والسنة</h2>'+(S.cfg.ev?l.evidence.map(evCard).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك. فعّلها من الإعدادات، ولا تعتمد على الحكم دون دليله.</div>');
   if(l.pt)h+='</details>';
