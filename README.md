@@ -13,7 +13,7 @@ Content status: verification against printed sources is in progress. `node tools
 - `style.css`: colors, layout, dark mode.
 - `fonts.css`: Amiri and IBM Plex Sans Arabic embedded as base64 (open fonts, SIL OFL) so the app works offline.
 - `build.py`: joins the files above into one file, `output/fiqh-alruh.html`. Also checks content ids against `expected_ids.json`; pass `--approve-removal` when ids were removed on purpose.
-- `android/`: minimal Android WebView wrapper (builds the signed APK `fiqh-alruh-android-v0.14.apk` at the repo root; the signing keystore is not part of this repo).
+- `android/`: minimal Android WebView wrapper (builds the signed APK from the HTML build; the signing keystore is not part of this repo).
 - `tools/cdp.js`: automated check with headless Chrome (clicks through the screens, checks for errors and sideways scrolling, writes screenshots to `output/`).
 - `tools/pdf.js`: makes a phone-sized PDF of the content, `output/fiqh-alruh-mobile.pdf`.
 
