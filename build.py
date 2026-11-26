@@ -1,5 +1,5 @@
 import re
-import os;os.chdir(os.path.dirname(os.path.abspath(__file__)));fonts=open('fonts.css').read();css=open('style.css').read();data=open('data.js').read()+open('adhkar_data.js').read();app=open('app.js').read()
+import os;os.chdir(os.path.dirname(os.path.abspath(__file__)));fonts=open('fonts.css').read();css=open('style.css').read();data=open('data.js').read()+open('adhkar_data.js').read()+open('calc_engine.js').read().replace("if(typeof module!=='undefined')module.exports={faraidCalc,faraidEstate,frStr,F};",'');app=open('app.js').read()
 
 import json,sys
 _ids=set(re.findall(r'"id":\s*"([a-z0-9_]+)"',data))

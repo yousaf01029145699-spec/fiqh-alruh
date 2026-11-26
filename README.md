@@ -1,12 +1,14 @@
 # فِقْهُ الرُّوح: مصدر التطبيق (نموذج أولي)
 
-Source for the standalone Arabic RTL web app. Detailed lessons across purification, prayer, fasting, zakat and hajj, plus adhkar with meanings and a quick-situations (مواقف سريعة) section. Not reviewed by a religious scholar.
+Source for the standalone Arabic RTL web app. Detailed lessons across purification, prayer, fasting, zakat, hajj, Quran etiquette and inheritance (الفرائض, with an exact-fraction calculator), plus adhkar with meanings and a quick-situations (مواقف سريعة) section. Not reviewed by a religious scholar.
 
-Content status: verification against printed sources is in progress. `node tools/review.js` currently reports 79 declared content gaps across 58 lessons and 524 school-difference rows. Treat any row marked "قيد الاستكمال" or "خارج نطاق هذا الدرس" as unfinished, not as a settled ruling.
+Content status: verification against printed sources is in progress. `node tools/review.js` currently reports 95 declared content gaps across 77 lessons and 550 school-difference rows. Treat any row marked "قيد الاستكمال" or "خارج نطاق هذا الدرس" as unfinished, not as a settled ruling.
 
 ## Files
 - `data.js`: fiqh content (lessons, evidence, school differences, quizzes, reflections, situations). Edit fiqh content here.
 - `adhkar_data.js`: adhkar, tasbih and dua sections with sources and meaning cells (`window.ADHKAR_SECTIONS`).
+- `calc_engine.js`: inheritance calculator engine (BigInt exact fractions), inlined by build.py. Not covered: pregnancy, khuntha, missing heir, dhawi al-arham, munasakhat.
+- `gen/`: scripts that merge the Quran and Fara'id chapters into data.js.
 - `app.js`: screens, routing, buttons, state, saving, search, quizzes, notes.
 - `style.css`: colors, layout, dark mode.
 - `fonts.css`: Amiri and IBM Plex Sans Arabic embedded as base64 (open fonts, SIL OFL) so the app works offline.

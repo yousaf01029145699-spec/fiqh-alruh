@@ -1,0 +1,13 @@
+const fs=require('fs');
+const lessons=[...require('./q_b1.js'),...require('./q_b2.js'),...require('./q_b3.js')];lessons.forEach(l=>{l.meaning.symbols=l.meaning.symbols||[];l.meaning.impact=l.meaning.impact||[];});
+const W={id:'quran',title:'باب القرآن',icon:'arch',status:'ready',blurb:'أحكام القرآن وآدابه: فضله، وآداب التلاوة، والاستماع، ومس المصحف، وقراءة الجنب والحائض، وسجود التلاوة، والجهر، والختم، والحفظ والتعاهد، وتعليمه وأخذ الأجرة عليه. المرجع الأساسي: التبيان في آداب حملة القرآن للنووي (شافعي المذهب) والموسوعة الفقهية الكويتية. دون التجويد وبلا تفسير.',lessons};
+let s=fs.readFileSync('data.js','utf8');
+if(s.includes('"id": "quran"'))throw new Error('already applied');
+fs.copyFileSync('data.js','/tmp/data.js.bak.quran');
+const i=s.indexOf('"id": "mutanawwiat"');if(i<0)throw 1;
+const j=s.indexOf('\n }\n];',i);if(j<0)throw 2;
+if(s.indexOf('\n }\n];',j+1)!==-1&&s.indexOf('\n }\n];',j+1)<s.indexOf('const REFLECTIONS'))throw 3;
+const js=JSON.stringify(W,null,1).split('\n').map(l=>' '+l).join('\n');
+s=s.slice(0,j)+'\n },\n'+js.slice(0)+s.slice(j+'\n }'.length);
+fs.writeFileSync('data.js',s);
+new Function(s+';return WORSHIPS')();console.log('ok',lessons.length);

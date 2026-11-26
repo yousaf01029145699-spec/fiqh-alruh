@@ -3,3 +3,4 @@
 keys/
 *.keystore
 build/
+__pycache__/

@@ -1,0 +1,16 @@
+const fs=require('fs');
+const lessons=[...require('./f_b1.js'),...require('./f_b2.js'),...require('./f_b3.js')];
+lessons.forEach(l=>{l.meaning.symbols=l.meaning.symbols||[];l.meaning.impact=l.meaning.impact||[];});
+const order=['f_madkhal','f_tarika','f_furud','f_rijal','f_nisa','f_asaba','f_hajb','f_usul','f_khassa'];
+lessons.sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id));
+const W={id:'faraid',title:'باب الفرائض (المواريث)',icon:'list',status:'ready',blurb:'علم المواريث من كتاب «فقه الفرائض: درس مختصر»: أركان الإرث وشروطه، والتركة وحقوقها، وأصحاب الفروض، وأحوال الرجال والنساء، والعصبات، والحجب والجد مع الإخوة، وأصول المسائل والعول والرد، والمسائل الخاصة. وفي آخره حاسبة الفرائض.',lessons};
+let s=fs.readFileSync('data.js','utf8');
+if(s.includes('"id": "faraid"'))throw new Error('already applied');
+fs.copyFileSync('data.js','/tmp/data.js.bak.faraid');
+const i=s.indexOf('"id": "quran"');if(i<0)throw 1;
+const j=s.indexOf('\n }\n];',i);if(j<0)throw 2;
+if(j>s.indexOf('const REFLECTIONS'))throw 3;
+const js=JSON.stringify(W,null,1).split('\n').map(l=>' '+l).join('\n');
+s=s.slice(0,j)+'\n },\n'+js+s.slice(j+'\n }'.length);
+fs.writeFileSync('data.js',s);
+new Function(s+';return WORSHIPS')();console.log('ok',lessons.map(l=>l.id).join(','));

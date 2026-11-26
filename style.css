@@ -160,3 +160,22 @@ body.dark .meta summary{color:var(--acc)}
 .mval{flex:1}
 .ninput{font:inherit;padding:6px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx);max-width:110px;text-align:center}
 .srow.wrap{flex-wrap:wrap}
+
+/* ===== glass layer (styling only) ===== */
+body{background-image:radial-gradient(60% 40% at 15% 8%,rgba(15,76,58,.16),transparent 70%),radial-gradient(55% 38% at 92% 30%,rgba(197,155,39,.18),transparent 70%),radial-gradient(60% 40% at 20% 85%,rgba(60,140,170,.12),transparent 70%);background-attachment:fixed}
+body.dark{background-image:radial-gradient(60% 40% at 15% 8%,rgba(40,140,100,.22),transparent 70%),radial-gradient(55% 38% at 92% 30%,rgba(216,181,79,.14),transparent 70%),radial-gradient(60% 40% at 20% 85%,rgba(60,120,170,.16),transparent 70%)}
+.card,.wcard,details,.opt,.linkc,.btn,.chip,.prev,.dots button{background-color:color-mix(in srgb,var(--card) 58%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.5);backdrop-filter:blur(14px) saturate(1.5);border-color:rgba(255,255,255,.55);box-shadow:0 6px 20px rgba(15,40,30,.08),inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(255,255,255,.18)}
+body.dark .card,body.dark .wcard,body.dark details,body.dark .opt,body.dark .linkc,body.dark .btn,body.dark .chip,body.dark .prev,body.dark .dots button{background-color:color-mix(in srgb,var(--card) 62%,transparent);border-color:rgba(255,255,255,.13);box-shadow:0 8px 22px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(255,255,255,.04)}
+nav{background-color:color-mix(in srgb,var(--card) 62%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);border-top:1px solid rgba(255,255,255,.55);box-shadow:0 -6px 20px rgba(15,40,30,.08),inset 0 1px 0 rgba(255,255,255,.6)}
+body.dark nav{border-top-color:rgba(255,255,255,.12)}
+.sheet>div{background-color:color-mix(in srgb,var(--card) 72%,transparent);-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);border:1px solid rgba(255,255,255,.5)}
+header{box-shadow:0 8px 24px rgba(10,40,30,.25),inset 0 -1px 0 rgba(255,255,255,.25),inset 0 1px 0 rgba(255,255,255,.2)}
+.search input{background-color:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 1px 3px rgba(0,0,0,.08),0 1px 0 rgba(255,255,255,.6)}
+body.dark .search input{background-color:rgba(19,33,27,.62)}
+.btn.pri{box-shadow:0 6px 18px rgba(15,76,58,.3),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn:active,.chip:active,.opt:active,.wcard:active,.linkc:active{transform:scale(.985);transition:transform .08s}
+.tbface{isolation:isolate;overflow:hidden;background:radial-gradient(circle at 32% 24%,rgba(60,170,130,.78) 0%,rgba(20,100,76,.78) 55%,rgba(10,60,46,.88) 100%)!important;-webkit-backdrop-filter:blur(8px) saturate(1.5);backdrop-filter:blur(8px) saturate(1.5);border:2px solid rgba(255,255,255,.45)!important;box-shadow:0 14px 34px rgba(8,40,30,.4),inset 0 3px 10px rgba(255,255,255,.55),inset 0 -12px 22px rgba(0,0,0,.28)!important}
+.tbface::before{content:"";position:absolute;left:12%;right:12%;top:3%;height:44%;border-radius:50% 50% 55% 55%/70% 70% 40% 40%;background:linear-gradient(to bottom,rgba(255,255,255,.62),rgba(255,255,255,.04));pointer-events:none;z-index:0}
+.tbface::after{content:"";position:absolute;left:20%;bottom:6%;width:34%;height:9%;border-radius:50%;background:rgba(255,255,255,.22);filter:blur(3px);transform:rotate(-12deg);pointer-events:none;z-index:0}
+.tbface>*{position:relative;z-index:1}
+.tbwrap:active .tbface{filter:brightness(1.12)}
