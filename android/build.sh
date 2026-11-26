@@ -13,7 +13,7 @@ SRC_HTML="${APP_HTML:-../fiqh-alruh-source/output/fiqh-alruh.html}"
 rm -rf build; mkdir -p build/classes
 cp "$SRC_HTML" app/assets/index.html
 "$BT/aapt2" compile --dir app/res -o build/res.zip
-"$BT/aapt2" link -o build/base.apk -I "$AJ" --manifest app/AndroidManifest.xml -R build/res.zip -A app/assets --min-sdk-version 24 --target-sdk-version 34 --version-code "${VERSION_CODE:-1}" --version-name "${VERSION_NAME:-0.1-prototype}"
+"$BT/aapt2" link -o build/base.apk -I "$AJ" --manifest app/AndroidManifest.xml -R build/res.zip -A app/assets --min-sdk-version 24 --target-sdk-version 34 --version-code "${VERSION_CODE:-1}" --version-name "${VERSION_NAME:-0.1}"
 javac -encoding UTF-8 -source 8 -target 8 -cp "$AJ" -d build/classes app/src/app/fiqhalruh/*.java
 "$BT/d8" --release --lib "$AJ" --output build build/classes/app/fiqhalruh/*.class
 cp build/base.apk build/unsigned.apk; (cd build && zip -q unsigned.apk classes.dex)

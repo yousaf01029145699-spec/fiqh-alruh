@@ -17,7 +17,7 @@ h1{font-family:Amiri;color:#0F4C3A;font-size:24pt;margin:0 0 4px}h2{color:#0F4C3
 table{border-collapse:collapse;width:100%;margin:6px 0;page-break-inside:avoid;font-size:10.5pt}td{border:1px solid #E8E2D5;padding:3px 6px;vertical-align:top}td:first-child{width:18%;font-weight:600;background:#F1EEE6}
 .n{background:#FFF7DD;border:1px solid #C59B27;border-radius:8px;padding:6px 10px;font-size:10.5pt}
 .pb{page-break-before:always}.ls{font-size:15pt;background:#EAF1EC;padding:3px 8px;border-radius:6px;margin-top:22px;border:none}.tw{font-weight:bold;margin-top:8px}.tl{padding-right:14px}a{color:#0F4C3A;text-decoration:none}h3{font-size:12.5pt;color:#7a5d10;margin:10px 0 4px}</style></head><body>
-<h1>فِقْهُ الرُّوح</h1><div>العبادات ومعانيها. نسخة للقراءة على الهاتف (PDF)، وهي نموذج أولي</div>
+<h1>فِقْهُ الرُّوح</h1><div>العبادات ومعانيها. نسخة للقراءة على الهاتف (PDF)</div>
 <div class="n"><b>تنبيه:</b> ${e(D.DISCLAIMER)}<br>${e(D.SOURCE_NOTE)}<br>هذه نسخة مرحلية: بعض الأبواب مكتوبة بتفصيل أكبر من غيرها، وما لم يستكمل مكتوب في موضعه أنه قيد الاستكمال. انظر الفهرس بالأسفل للانتقال إلى أي درس، وملف المراجعة العلمية المنفصل لمواضع النقص.</div>`;
 h+='@@TOC@@';
 for(const w of D.WORSHIPS){
