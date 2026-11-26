@@ -187,3 +187,10 @@ body.dark .search input{background-color:rgba(19,33,27,.62)}
 #splash .sp-t{font-family:'Amiri','IBM Plex Sans Arabic',serif;font-size:1.65rem;line-height:2.25;margin:18px 0;color:#F6E6B4;text-shadow:0 2px 14px rgba(0,0,0,.35)}
 #splash .sp-orn{color:#C59B27;font-size:1.5rem;letter-spacing:.3em}
 @keyframes spin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.card.adone{animation:adone .9s ease}
+@keyframes adone{0%{box-shadow:0 0 0 0 rgba(197,155,39,.55)}40%{box-shadow:0 0 0 10px rgba(197,155,39,.25);transform:scale(1.015)}100%{box-shadow:0 0 0 0 rgba(197,155,39,0);transform:none}}
+
+.card.done{border-color:var(--ok);box-shadow:inset 4px 0 0 var(--ok)}
+.card.done .btn[disabled]{color:var(--ok);border-color:var(--ok);opacity:1;font-weight:700}
+[data-aitem]:active{transform:scale(.94)}
