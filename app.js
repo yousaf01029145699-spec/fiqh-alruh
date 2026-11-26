@@ -86,7 +86,7 @@ function vHome(){
  if(last){const l=last;h+='<button class="card" style="width:100%;text-align:right" data-go="lesson/'+l.id+'"><span class="tag gold">أين توقفت؟</span><h3>'+esc(l.title)+'</h3><div class="mut">'+(S.last.tab==='steps'?'دليل الأداء، الخطوة '+AR(S.last.step+1)+' من '+AR(l.steps.length):'آخر ما فتحته: '+tabName(S.last.tab))+'</div><div class="bar"><i style="width:'+lessonPct(l)+'%"></i></div></button>'}
  else h+='<div class="card"><span class="tag gold">أين توقفت؟</span><p class="mut">لم تفتح درساً بعد. ابدأ بدرس الوضوء.</p><button class="btn pri" data-go="lesson/wudu">ابدأ الوضوء</button></div>';
  if(S.cfg.goal){const st=study();h+='<div class="card"><b>هدف اليوم:</b> '+AR(st.opened.length)+' من '+AR(S.cfg.goal)+' درس<div class="bar"><i style="width:'+Math.min(100,Math.round(st.opened.length/S.cfg.goal*100))+'%"></i></div></div>'}
- h+='<h2>العبادات</h2><div class="grid">'+WORSHIPS.filter(visW).map(w=>{let tags,pct='';if(w.status==='ready'){const ls=w.lessons;const c=ls.reduce((a,l)=>({r:a.r+cnt(l).rul,m:a.m+cnt(l).men}),{r:0,m:0});tags='<span class="tag">'+AR(ls.length)+' درس</span><span class="tag">'+AR(c.r)+' بطاقة حكم</span><span class="tag">'+AR(c.m)+' معاني</span>';pct='<div class="bar"><i style="width:'+Math.round(ls.reduce((a,l)=>a+lessonPct(l),0)/ls.length)+'%"></i></div>'}else tags='<span class="tag">نظرة عامة فقط</span>';
+ h+='<button class="card" style="width:100%;text-align:right" data-go="gloss"><span class="tag gold">مفتاح المصطلحات</span><h3>معنى الفرض والمندوب والمباح والمكروه والحرام</h3><div class="mut">افتحها مباشرة بضغطة واحدة</div></button>';h+='<h2>العبادات</h2><div class="grid">'+WORSHIPS.filter(visW).map(w=>{let tags,pct='';if(w.status==='ready'){const ls=w.lessons;const c=ls.reduce((a,l)=>({r:a.r+cnt(l).rul,m:a.m+cnt(l).men}),{r:0,m:0});tags='<span class="tag">'+AR(ls.length)+' درس</span><span class="tag">'+AR(c.r)+' بطاقة حكم</span><span class="tag">'+AR(c.m)+' معاني</span>';pct='<div class="bar"><i style="width:'+Math.round(ls.reduce((a,l)=>a+lessonPct(l),0)/ls.length)+'%"></i></div>'}else tags='<span class="tag">نظرة عامة فقط</span>';
  return '<button class="wcard" data-go="worship/'+w.id+'"><div class="ico">'+ico(w.icon)+'</div><h3>'+esc(w.title)+'</h3><div>'+tags+'</div>'+pct+'</button>'}).join('')+'</div>';
  h+='<details class="card"><summary><b>نموذج أولي تعليمي موثّق بالمصادر</b> (اضغط للتفاصيل)</summary><div class="banner"><b>تنبيه:</b> محتوى تعليمي موثّق بمصادره، ومراجعته مستمرة، وليس فتوى شخصية. '+STATUSLINE()+' <details><summary>حدود التوثيق</summary>'+esc(SOURCE_NOTE)+'</details></div></details>';
 h+='<details class="card"><summary><b>مفتاح المصطلحات</b> (فرض، مندوب، مباح، مكروه)</summary>'+glossCard()+'</details>';
@@ -95,13 +95,14 @@ h+='<details class="card"><summary><b>مفتاح المصطلحات</b> (فرض�
  return h}
 const disc=()=>'<p class="disc">'+DISCLAIMER+'</p>';
 const tabName=t=>({fiqh:'الحكم الفقهي',meaning:'المعنى والروح',steps:'دليل الأداء',khilaf:'الخلاف',quiz:'الاختبار'}[t]||t);
+function vGloss(){return '<button class="back" data-go="home">‹ الرئيسية</button><h2 style="margin-top:0">مفتاح المصطلحات</h2>'+glossCard()}
 function vWorship(){
  if(R.a){const w=WORSHIPS.find(x=>x.id===R.a);if(!w)return'<p>غير موجود</p>';
   let h='<button class="back" data-go="worship">‹ العبادات</button><h2 style="margin-top:0">'+esc(w.title)+'</h2>';
   if(w.status==='ready')h+=w.lessons.map(l=>'<button class="card" style="width:100%;text-align:right" data-go="lesson/'+l.id+'"><h3>'+esc(l.title)+'</h3><div class="mut">'+esc(l.hukm)+'</div><div class="bar"><i style="width:'+lessonPct(l)+'%"></i></div><div class="ev">التقدم: '+AR(lessonPct(l))+'٪ (خطوات الأداء والاختبار)</div></button>').join('');
   else{const o=w.overview;h+='<div class="banner">هذه نظرة عامة مختصرة. الدرس التفصيلي بالأركان والخلاف والاختبار لم يُكتب بعد.</div><div class="card"><h3>التعريف</h3><p>'+esc(o.definition)+'</p></div><div class="card"><h3>أهم ما يُعرف الآن</h3>'+o.points.map(p=>'<p>• '+esc(p)+'</p>').join('')+'</div>'+o.evidence.map(e=>evCard(e)).join('')+(o.sources?'<div class="card mut">المصادر: '+esc(o.sources)+'</div>':'')+'<div class="card mut">'+esc(o.next)+'</div>'}
   return h}
- return '<h2 style="margin-top:0">العبادات</h2>'+WORSHIPS.filter(visW).map(w=>'<button class="card" style="width:100%;text-align:right;display:flex;gap:12px;align-items:center" data-go="worship/'+w.id+'"><div class="ico" style="color:var(--pri)">'+ico(w.icon)+'</div><div><h3>'+esc(w.title)+'</h3><div class="mut">'+esc(w.blurb)+'</div></div></button>').join('')}
+ return '<h2 style="margin-top:0">العبادات</h2><button class="card" style="width:100%;text-align:right" data-go="gloss"><span class="tag gold">مفتاح المصطلحات</span><h3>معنى الفرض والمندوب والمباح والمكروه والحرام</h3><div class="mut">افتحها مباشرة بضغطة واحدة</div></button>'+WORSHIPS.filter(visW).map(w=>'<button class="card" style="width:100%;text-align:right;display:flex;gap:12px;align-items:center" data-go="worship/'+w.id+'"><div class="ico" style="color:var(--pri)">'+ico(w.icon)+'</div><div><h3>'+esc(w.title)+'</h3><div class="mut">'+esc(w.blurb)+'</div></div></button>').join('')}
 function evCard(e){return '<div class="card"><div class="q">'+(e.type==='quran'?'﴿ ':'')+esc(e.text)+(e.type==='quran'?' ﴾':'')+'<small>'+(e.type==='quran'?'آية':'حديث')+' | '+esc(e.ref)+(e.exact===false?' | نقل بالمعنى':'')+'</small></div></div>'}
 function vLesson(){
  const l=lesson(R.a);if(!l)return'<p>غير موجود</p>';
@@ -396,7 +397,7 @@ function vSearch(){
 function render(scroll){
  const m=$('#view');let h;const keepY=window.scrollY||0;const openSecs=[...m.querySelectorAll('details.sset')].map(d=>d.open);
  if(searchQ&&R.r!=='search'&&false){}
- switch(R.r){case 'home':h=vHome();break;case 'worship':h=vWorship();break;case 'lesson':h=vLesson();break;case 'sit':h=vSit();break;case 'mine':h=vMine();break;case 'settings':h=vSettings();break;case 'search':h=vSearch();break;case 'adhkar':h=R.a?vAdhkarSec():vAdhkar();break;default:h=vHome()}
+ switch(R.r){case 'home':h=vHome();break;case 'worship':h=vWorship();break;case 'lesson':h=vLesson();break;case 'sit':h=vSit();break;case 'gloss':h=vGloss();break;case 'mine':h=vMine();break;case 'settings':h=vSettings();break;case 'search':h=vSearch();break;case 'adhkar':h=R.a?vAdhkarSec():vAdhkar();break;default:h=vHome()}
  m.innerHTML=h;m.querySelectorAll('details.sset').forEach((d,i)=>{if(openSecs[i])d.open=true});
  const nav={home:'home',worship:'worship',lesson:'worship',sit:'sit',mine:'mine',adhkar:'adhkar'}[R.r];
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===nav));
