@@ -140,7 +140,7 @@ function khCard(l,k,ord,mine,inl){
 function underPoint(l,c,top){
  let h='';
  if(c.ev&&c.ev.length){h+='<div class="uev"><h4>الدليل على هذه المسألة</h4>'+(S.cfg.ev?c.ev.map(id=>evCard(l.evidence.find(e=>e.id===id))).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك.</div>')+'</div>'}
- else if(!top&&!/البخاري|مسلم|رواه|أبو داود|الترمذي|النسائي|ابن ماجه|\(\d+\)|[آأ]ية|المائدة|البقرة|النساء|التوبة/.test(c.ref||'')){h+='<div class="uev"><div class="card mut">دليل نصي مفصّل لهذه المسألة: لم يُوثَّق بعد في التطبيق. المصدر الفقهي في سطر المصدر أعلاه.</div></div>'}
+
  if(c.kh&&c.kh.length){const ord=orderedSchools();const mine=S.cfg.kmode==='mine'&&S.school!=='none';const body=c.kh.map(id=>khCard(l,l.khilaf.find(k=>k.id===id),ord,mine,true)).join('');h+='<div class="ukh">'+(c.kh.length>4?'<details><summary><b>'+(top?'مسائل خلافية عامة في الدرس':'أقوال المذاهب في هذه المسألة')+' ('+AR(c.kh.length)+' مسائل)</b></summary>'+body+'</details>':'<h4>'+(top?'مسائل خلافية عامة في الدرس':'أقوال المذاهب في هذه المسألة')+'</h4>'+body)+'</div>'}
  return h}
 function vKhilaf(l){
