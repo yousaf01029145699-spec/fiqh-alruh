@@ -1,13 +1,13 @@
 # فِقْهُ الرُّوح: مصدر التطبيق (نموذج أولي)
 
-Source for the standalone Arabic RTL web app. Detailed lessons across purification, prayer, fasting, zakat, hajj, Quran etiquette and inheritance (الفرائض, with an exact-fraction calculator), plus adhkar with meanings and a quick-situations (مواقف سريعة) section. Not reviewed by a religious scholar.
+Source for the standalone Arabic RTL web app. Detailed lessons across purification, prayer, zakat, fasting, hajj, miscellaneous topics, Quran etiquette and inheritance (الفرائض), plus adhkar with meanings and a quick-situations (مواقف سريعة) section. Not reviewed by a religious scholar.
 
 Content status: verification against printed sources is in progress. `node tools/review.js` currently reports 95 declared content gaps across 77 lessons and 550 school-difference rows. Treat any row marked "قيد الاستكمال" or "خارج نطاق هذا الدرس" as unfinished, not as a settled ruling.
 
 ## Files
 - `data.js`: fiqh content (lessons, evidence, school differences, quizzes, reflections, situations). Edit fiqh content here.
 - `adhkar_data.js`: adhkar, tasbih and dua sections with sources and meaning cells (`window.ADHKAR_SECTIONS`).
-- `calc_engine.js`: inheritance calculator engine (BigInt exact fractions), inlined by build.py. Not covered: pregnancy, khuntha, missing heir, dhawi al-arham, munasakhat.
+- `calc_engine.js`: engine of an inheritance calculator that was built and then removed from the app on request. It is still inlined by build.py but nothing in the interface calls it.
 - `gen/`: scripts that merge the Quran and Fara'id chapters into data.js.
 - `app.js`: screens, routing, buttons, state, saving, search, quizzes, notes.
 - `style.css`: colors, layout, dark mode.
@@ -16,6 +16,16 @@ Content status: verification against printed sources is in progress. `node tools
 - `android/`: minimal Android WebView wrapper (builds the signed APK `fiqh-alruh-android-v0.14.apk` at the repo root; the signing keystore is not part of this repo).
 - `tools/cdp.js`: automated check with headless Chrome (clicks through the screens, checks for errors and sideways scrolling, writes screenshots to `output/`).
 - `tools/pdf.js`: makes a phone-sized PDF of the content, `output/fiqh-alruh-mobile.pdf`.
+
+## What exists (77 lessons)
+- الطهارة والوضوء: 15 lessons. الصلاة: 29. الزكاة والصدقة: 3. الصيام: 4. الحج والعمرة: 5. باب المتنوعات: 2. باب القرآن (أحكام القرآن وآدابه): 10. باب الفرائض (المواريث): 9.
+- Also: adhkar (morning, evening, sleep, waking, tasbih, duas), quick situations (مواقف سريعة), personal notes and bookmarks, search, quizzes per lesson, terms key (مفتاح المصطلحات), settings (font, dark mode, daily goal, glass tap sound, vibration), manual backup.
+- Coverage is partial in the shorter chapters (zakat 3 lessons, fasting 4, hajj 5 lessons); they are not complete treatments of those topics.
+
+## What does NOT exist
+- No inheritance calculator in the interface (removed). No tajweed, tafsir, audio or full mushaf. The «سُنّة اليوم» feature is not built.
+- Not covered: pregnancy, khuntha, missing heir, dhawi al-arham and munasakhat as worked calculations; they appear only as lesson text.
+- Content gaps are declared in the app as «قيد الاستكمال» (see the Content status line above); they are not filled from unread sources.
 
 ## Requirements
 - Python 3 (build.py uses only the standard library)
@@ -28,7 +38,8 @@ Content status: verification against printed sources is in progress. `node tools
 3. `node tools/pdf.js` makes `output/fiqh-alruh-mobile.pdf`.
 
 ## Android APK
-- `fiqh-alruh-android-v0.14.apk` packages the gen-120 content build. The daily-goal feature published later (gen 121) is in the web source here but NOT inside this APK until the wrapper is rebuilt.
+- Current build: version 0.33 (versionCode 33, package `app.fiqhalruh`), made with `android/build.sh` from `output/fiqh-alruh.html`. It contains the same content and features as the web build in `docs/index.html` (the GitHub Pages site), including the daily study goal (Settings, then goal; the home screen then shows «هدف اليوم»).
+- `fiqh-alruh-android-v0.14.apk` at the repo root is an old build kept only for history. Do not use it. APK files are signed with a private key that is not in this repo.
 
 ## Notes
 - Saving: bookmarks, notes, progress and settings are stored in the browser (localStorage) on this device only. If storage is blocked they stay in memory until the page closes and a notice shows. Nothing syncs. Settings has a manual backup: "تجهيز النسخة" shows a text you copy and keep; pasting it back and pressing "استرجاع" (twice) restores notes, bookmarks and progress.
