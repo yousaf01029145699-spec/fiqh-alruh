@@ -1,15 +1,16 @@
 # فِقْهُ الرُّوح: مصدر التطبيق (نموذج أولي)
 
-Source for the standalone Arabic RTL web app. Prototype: wudu and prayer are detailed lessons; zakat, fasting and hajj are overview cards only. Not reviewed by a religious scholar.
+Source for the standalone Arabic RTL web app. Detailed lessons across purification, prayer, fasting, zakat and hajj, plus adhkar with meanings and a quick-situations (مواقف سريعة) section. Not reviewed by a religious scholar.
 
-Content status: verification against printed sources is in progress. `node tools/review.js` currently reports 127 flagged content rows (including rows whose content was partially verified and keeps a declared residual note). Treat any row marked "قيد الاستكمال" or "خارج نطاق هذا الدرس" as unfinished, not as a settled ruling.
+Content status: verification against printed sources is in progress. `node tools/review.js` currently reports 79 declared content gaps across 58 lessons and 524 school-difference rows. Treat any row marked "قيد الاستكمال" or "خارج نطاق هذا الدرس" as unfinished, not as a settled ruling.
 
 ## Files
-- `data.js`: all content (lessons, evidence, school differences, quizzes, reflections, situations). Edit content here.
+- `data.js`: fiqh content (lessons, evidence, school differences, quizzes, reflections, situations). Edit fiqh content here.
+- `adhkar_data.js`: adhkar, tasbih and dua sections with sources and meaning cells (`window.ADHKAR_SECTIONS`).
 - `app.js`: screens, routing, buttons, state, saving, search, quizzes, notes.
 - `style.css`: colors, layout, dark mode.
 - `fonts.css`: Amiri and IBM Plex Sans Arabic embedded as base64 (open fonts, SIL OFL) so the app works offline.
-- `build.py`: joins the four files above into one file, `output/fiqh-alruh.html`.
+- `build.py`: joins the files above into one file, `output/fiqh-alruh.html`. Also checks content ids against `expected_ids.json`; pass `--approve-removal` when ids were removed on purpose.
 - `android/`: minimal Android WebView wrapper (builds the signed APK `fiqh-alruh-android-v0.14.apk` at the repo root; the signing keystore is not part of this repo).
 - `tools/cdp.js`: automated check with headless Chrome (clicks through the screens, checks for errors and sideways scrolling, writes screenshots to `output/`).
 - `tools/pdf.js`: makes a phone-sized PDF of the content, `output/fiqh-alruh-mobile.pdf`.
