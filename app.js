@@ -390,7 +390,9 @@ function searchAll(q0){
 function vSearch(){
  let h='<h2 style="margin-top:0">نتائج البحث</h2>';
  const res=searchAll(searchQ);
+ const nq=norm(searchQ);const glh=['مفتاح','مصطلح','مندوب','مستحب','مباح','مكروه','حرام','معني الفرض'].some(w=>nq.includes(norm(w)));
  h+='<div class="mut">'+AR(res.length)+' نتيجة لـ «'+esc(searchQ)+'»'+(res.length===60?' (أول ٦٠)':'')+'</div>';
+ if(glh)h+='<button class="card" style="width:100%;text-align:right" data-go="gloss"><span class="tag gold">مفتاح المصطلحات</span><h3>معنى الفرض والمندوب والمباح والمكروه والحرام</h3></button>';
  if(!res.length)h+='<div class="card mut">لا نتائج. جرّب كلمة أقصر مثل: نية، سجود، صيام.</div>';
  h+=res.map(e=>'<button class="card" style="width:100%;text-align:right" data-open="'+esc(e.id)+'"><span class="tag">'+esc(e.lt)+'</span><span class="tag">'+esc(e.sec)+'</span><h3>'+esc(e.title)+'</h3><div class="mut">'+esc(e.text.slice(0,140))+(e.text.length>140?'…':'')+'</div></button>').join('');
  return h}
