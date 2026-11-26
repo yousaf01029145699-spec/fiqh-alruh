@@ -28191,7 +28191,7 @@ function vHome(){
 h+='<details class="card"><summary><b>مفتاح المصطلحات</b> (فرض، مندوب، مباح، مكروه)</summary>'+glossCard()+'</details>';
  h+='<details class="card"><summary><b>معنى اليوم</b></summary><div><span class="tag gold">تأمل</span><h3>'+esc(r.t)+'</h3><p class="ar" style="font-size:1.2rem">'+esc(r.d)+'</p><div class="ev">'+esc(r.kind)+' | '+lk(r.ref)+'</div><div class="row" style="margin-top:8px"><button class="btn" data-bm="refl.'+r.id+'">'+(isBM('refl.'+r.id)?'محفوظ ★':'احفظ ☆')+'</button><button class="btn" data-go="lesson/'+r.lesson+'">افتح الدرس</button></div></div></details>';
  h+='<details class="card"><summary><b>قراءات للاستزادة في المعاني</b></summary><div class="mut">هذه روابط أرسلتها للاطلاع على المعاني والأسرار، ولم يؤخذ منها حكم فقهي في التطبيق. قراءتها تحتاج إنترنت.<ul><li>أثر العبادات في تهذيب النفوس (إسلام ويب)</li><li>العلاقة بين العبادات والأخلاق (إسلام ويب)</li><li>أسرار العبادات (شبكة الفكر)</li></ul></div></details>';
- return h+disc()}
+ return h}
 const disc=()=>'<p class="disc">'+DISCLAIMER+'</p>';
 const tabName=t=>({fiqh:'الحكم الفقهي',meaning:'المعنى والروح',steps:'دليل الأداء',khilaf:'الخلاف',quiz:'الاختبار'}[t]||t);
 function vWorship(){
@@ -28199,8 +28199,8 @@ function vWorship(){
   let h='<button class="back" data-go="worship">‹ العبادات</button><h2 style="margin-top:0">'+esc(w.title)+'</h2>';
   if(w.status==='ready')h+=w.lessons.map(l=>'<button class="card" style="width:100%;text-align:right" data-go="lesson/'+l.id+'"><h3>'+esc(l.title)+'</h3><div class="mut">'+esc(l.hukm)+'</div><div class="bar"><i style="width:'+lessonPct(l)+'%"></i></div><div class="ev">التقدم: '+AR(lessonPct(l))+'٪ (خطوات الأداء والاختبار)</div></button>').join('');
   else{const o=w.overview;h+='<div class="banner">هذه نظرة عامة مختصرة. الدرس التفصيلي بالأركان والخلاف والاختبار لم يُكتب بعد.</div><div class="card"><h3>التعريف</h3><p>'+esc(o.definition)+'</p></div><div class="card"><h3>أهم ما يُعرف الآن</h3>'+o.points.map(p=>'<p>• '+esc(p)+'</p>').join('')+'</div>'+o.evidence.map(e=>evCard(e)).join('')+(o.sources?'<div class="card mut">المصادر: '+esc(o.sources)+'</div>':'')+'<div class="card mut">'+esc(o.next)+'</div>'}
-  return h+disc()}
- return '<h2 style="margin-top:0">العبادات</h2>'+WORSHIPS.filter(visW).map(w=>'<button class="card" style="width:100%;text-align:right;display:flex;gap:12px;align-items:center" data-go="worship/'+w.id+'"><div class="ico" style="color:var(--pri)">'+ico(w.icon)+'</div><div><h3>'+esc(w.title)+'</h3><div class="mut">'+esc(w.blurb)+'</div></div></button>').join('')+disc()}
+  return h}
+ return '<h2 style="margin-top:0">العبادات</h2>'+WORSHIPS.filter(visW).map(w=>'<button class="card" style="width:100%;text-align:right;display:flex;gap:12px;align-items:center" data-go="worship/'+w.id+'"><div class="ico" style="color:var(--pri)">'+ico(w.icon)+'</div><div><h3>'+esc(w.title)+'</h3><div class="mut">'+esc(w.blurb)+'</div></div></button>').join('')}
 function evCard(e){return '<div class="card"><div class="q">'+(e.type==='quran'?'﴿ ':'')+esc(e.text)+(e.type==='quran'?' ﴾':'')+'<small>'+(e.type==='quran'?'آية':'حديث')+' | '+esc(e.ref)+(e.exact===false?' | نقل بالمعنى':'')+'</small></div></div>'}
 function vLesson(){
  const l=lesson(R.a);if(!l)return'<p>غير موجود</p>';
@@ -28265,7 +28265,7 @@ function vSit(){
  let h='<h2 style="margin-top:0">مواقف وأحكام سريعة</h2><div class="banner">إجابات موجزة للمواقف الشائعة، مع ذكر الخلاف حيث يوجد. ليست بديلاً عن سؤال أهل العلم في حالتك.</div><input type="search" id="sitq" placeholder="ابحث في المواقف" value="'+esc(sitQ)+'" style="width:100%;height:46px;border-radius:12px;border:1px solid var(--bd);padding:0 12px;background:var(--card);color:var(--tx)"><div class="chips" style="margin:8px 0">'+cats.map(c=>'<button class="chip '+(c===sitCat?'on':'')+'" data-cat="'+c+'">'+c+'</button>').join('')+'</div>';
  if(!list.length)h+='<div class="card mut">لا توجد مواقف مطابقة. <button class="btn" data-catreset="1">مسح التصفية</button></div>';
  h+=list.map(s=>'<details id="d-'+s.id+'"><summary>'+esc(s.q)+'</summary><div class="has-acts" style="position:relative;padding-left:90px;padding-bottom:10px">'+cardActs('sit.'+s.id)+'<p><b>'+esc(s.a)+'</b></p><p class="mut">'+esc(s.d)+'</p><div class="ev">'+lk(s.ref)+'</div></div></details>').join('');
- return h+disc()}
+ return h}
 function vMine(){
  let h='<h2 style="margin-top:0">تأملاتي</h2><div class="seg" style="margin-top:0"><span class="pill" style="right:'+(mineTab==='notes'?'50%':'4px')+'"></span><button data-mt="bm" class="'+(mineTab==='bm'?'on':'')+'">المحفوظات ('+AR(S.bm.length)+')</button><button data-mt="notes" class="'+(mineTab==='notes'?'on':'')+'">ملاحظاتي ('+AR(S.notes.length)+')</button></div>';
  if(!persist)h+='<div class="banner">تنبيه: الحفظ الدائم غير متاح هنا (أو تجاوز الحد المسموح)، فما تكتبه يبقى حتى تغلق الصفحة فقط.</div>';
@@ -28276,7 +28276,7 @@ function vMine(){
   h+='<button class="btn pri" data-note="free" style="margin-bottom:10px">ملاحظة جديدة</button>';
   if(!S.notes.length)h+='<div class="card mut">لا ملاحظات بعد.</div>';
   h+=S.notes.map(n=>'<div class="card"><div class="ev">'+esc(new Date(n.ts).toLocaleDateString('ar-EG'))+(n.title?' | على: '+esc(n.title):'')+'</div><p style="white-space:pre-wrap">'+esc(n.text)+'</p><div class="row">'+(n.ref&&n.ref!=='free'?'<button class="btn" data-open="'+esc(n.ref)+'">افتح</button>':'')+'<button class="btn" data-ndel="'+n.id+'" id="nd-'+n.id+'">حذف</button></div></div>').join('')}
- return h+disc()}
+ return h}
 function tg(k,label,desc,locked){const on=locked?true:!!S.cfg[k];return '<div class="srow"><div><b>'+label+'</b>'+(desc?'<div class="mut">'+desc+'</div>':'')+'</div><button class="tgl'+(on?' on':'')+'" role="switch" aria-checked="'+on+'" '+(locked?'disabled':'data-cfg="'+k+'"')+'><i></i></button></div>'}
 function chs(k,opts,cur,attr){return '<div class="chips wrap">'+opts.map(o=>'<button class="chip '+(cur===o[0]?'on':'')+'" '+attr+'="'+k+':'+o[0]+'">'+o[1]+'</button>').join('')+'</div>'}
 function soon(t,why){return '<div class="srow off"><div><b>'+t+'</b><div class="mut">'+why+'</div></div><span class="tag">غير متاح بعد</span></div>'}
