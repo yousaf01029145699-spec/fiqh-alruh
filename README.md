@@ -1,4 +1,4 @@
-# فِقْهُ الرُّوح: مصدر التطبيق (نموذج أولي)
+# فِقْهُ الرُّوح: مصدر التطبيق
 
 Source for the standalone Arabic RTL web app. Detailed lessons across purification, prayer, zakat, fasting, hajj, miscellaneous topics, Quran etiquette and inheritance (الفرائض), plus adhkar with meanings and a quick-situations (مواقف سريعة) section. Not reviewed by a religious scholar.
 
