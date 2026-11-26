@@ -1,6 +1,6 @@
 # فِقْهُ الرُّوح: مصدر التطبيق (نموذج أولي)
 
-Source for the standalone Arabic RTL web app. Detailed lessons across purification, prayer, fasting, zakat, hajj, Quran etiquette and inheritance (الفرائض, with an exact-fraction calculator), plus adhkar with meanings and a quick-situations (مواقف سريعة) section. Not reviewed by a religious scholar.
+Source for the standalone Arabic RTL web app. Detailed lessons across purification, prayer, fasting, zakat, hajj, Quran etiquette and inheritance (الفرائض), plus adhkar with meanings and a quick-situations (مواقف سريعة) section. Not reviewed by a religious scholar.
 
 Content status: verification against printed sources is in progress. `node tools/review.js` currently reports 95 declared content gaps across 77 lessons and 550 school-difference rows. Treat any row marked "قيد الاستكمال" or "خارج نطاق هذا الدرس" as unfinished, not as a settled ruling.
 
