@@ -63,7 +63,7 @@ const cnt=l=>({rul:l.fiqh.conditions.length+l.fiqh.pillars.length+l.fiqh.obligat
 function lessonPct(l){const p=P(l.id);const done=Object.keys(p.steps).filter(k=>p.steps[k]).length;const tot=l.steps.length+1;return Math.round((done+(p.quiz?1:0))/tot*100)}
 /* views */
 function cardActs(id,title){return '<div class="acts"><button data-bm="'+id+'" class="'+(isBM(id)?'on':'')+'" aria-label="حفظ في المفضلة">'+(isBM(id)?'★':'☆')+'</button><button data-note="'+id+'" aria-label="إضافة ملاحظة">✎</button></div>'}
-function infoCard(l,c,secKey){return infoCard0(l,c,secKey)+((c.ev||c.kh)?'<div class="under">'+underPoint(l,c)+'</div>':'')}
+function infoCard(l,c,secKey){return infoCard0(l,c,secKey)+(l.pt?'<div class="under">'+underPoint(l,c)+'</div>':'')}
 function infoCard0(l,c,secKey){const id=l.id+'.'+secKey+'.'+c.id;return '<div class="card has-acts" id="c-'+id.replace(/\./g,'_')+'">'+cardActs(id)+'<h3>'+esc(c.t)+(c.kind?' <span class="tag '+(c.kind==='تأمل'?'':'gold')+'">'+esc(c.kind)+'</span>':'')+'</h3><p>'+esc(c.d)+'</p>'+(c.ref?'<div class="ev">المصدر: '+lk(c.ref)+'</div>':'')+'</div>'}
 const GLOSS_SRC="الموسوعة الفقهية الكويتية: حكم (ج18 ص65-66) https://shamela.ws/book/11430bu/10761 و https://shamela.ws/book/11430bu/10762 | فرض (ج32 ص95-96) https://shamela.ws/book/11430bu/20273 و https://shamela.ws/book/11430bu/20274 | استحباب (ج3 ص214-215) https://shamela.ws/book/11430bu/1761 و https://shamela.ws/book/11430bu/1762 و https://shamela.ws/book/11430bu/1763 | سنة (ج25 ص264-265) https://shamela.ws/book/11430bu/15646 و https://shamela.ws/book/11430bu/15647 و https://shamela.ws/book/11430bu/15648 | ندب (ج40 ص128) https://shamela.ws/book/11430bu/26113 | كراهة (ج34 ص221-222) https://shamela.ws/book/11430bu/21889 و https://shamela.ws/book/11430bu/21890 و https://shamela.ws/book/11430bu/21891 | تحريم (ج10 ص205-206) https://shamela.ws/book/11430bu/6077 و https://shamela.ws/book/11430bu/6078 | الحرام والمكروه عند الحنفية (واجب، ج42 ص330) https://shamela.ws/book/11430bu/28077 | إباحة (ج1) https://muslim-library.com/keoj/volume/1/185/ و https://muslim-library.com/keoj/volume/1/178/ | نفل (ج41 ص100-101) https://shamela.ws/book/11430bu/26813 و https://shamela.ws/book/11430bu/26814";
 const GLOSS_WARN=[
@@ -120,11 +120,11 @@ function vLesson(){
  if(R.b==='quiz')return bk+vQuiz(l);
  if(tab==='fiqh'){
   h+='<div class="card"><h3>التعريف</h3><p>'+esc(l.definition)+'</p><h3 style="margin-top:8px">الحكم</h3><p>'+esc(l.hukm)+'</p><div class="ev">'+lk(l.hukmRef)+'</div></div>';
-  if(l.hukmEv)h+='<div class="under">'+underPoint(l,{ev:l.hukmEv})+'</div>';
+  if(l.pt)h+='<div class="under">'+underPoint(l,{ev:l.hukmEv,kh:l.hukmKh},1)+'</div>';
   const sec=(t,arr,k)=>'<h2>'+t+' <span class="tag">'+AR(arr.length)+'</span></h2>'+arr.map(c=>infoCard(l,c,k)).join('');
   h+=sec((l.labels&&l.labels.c)||'الشروط',l.fiqh.conditions,'c')+sec((l.labels&&l.labels.p)||'الأركان',l.fiqh.pillars,'p')+sec((l.labels&&l.labels.o)||'الواجبات',l.fiqh.obligations,'o')+sec((l.labels&&l.labels.s)||'السنن',l.fiqh.sunan,'s')+sec((l.labels&&l.labels.n)||'المبطلات والنواقض',l.fiqh.nullifiers,'n');
-  h+=(l.hukmEv?'<details class="allev"><summary><b>جميع أدلة الدرس في موضع واحد</b></summary>':'')+'<h2>الدليل من القرآن والسنة</h2>'+(S.cfg.ev?l.evidence.map(evCard).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك. فعّلها من الإعدادات، ولا تعتمد على الحكم دون دليله.</div>');
-  if(l.hukmEv)h+='</details>';
+  h+=(l.pt?'<details class="allev"><summary><b>جميع أدلة الدرس في موضع واحد</b></summary>':'')+'<h2>الدليل من القرآن والسنة</h2>'+(S.cfg.ev?l.evidence.map(evCard).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك. فعّلها من الإعدادات، ولا تعتمد على الحكم دون دليله.</div>');
+  if(l.pt)h+='</details>';
   h+='<h2>أخطاء شائعة وتنبيهات</h2>'+l.mistakes.map(m=>'<div class="card has-acts">'+cardActs(l.id+'.x.'+m.id)+'<h3>'+esc(m.t)+'</h3><p>'+esc(m.d)+'</p></div>').join('');
  }else{
   const emptyM=!l.meaning.why.length&&!l.meaning.symbols.length&&!l.meaning.impact.length;
@@ -137,10 +137,11 @@ function vLesson(){
 function khCard(l,k,ord,mine,inl){
  const cell=(k,s)=>'<b class="'+(s===S.school?'pref':'')+'">'+SCHOOLS[s].name+'</b><span class="'+(s===S.school?'pref':'')+'">'+esc(k.v[s])+'</span>';
  return '<div class="card has-acts'+(inl?' kin':'')+'">'+(inl?'':cardActs(l.id+'.k.'+k.id))+'<h3>'+esc(k.issue)+'</h3>'+(mine?'<div class="sch">'+cell(k,S.school)+'</div><details><summary>أقوال المذاهب الأخرى</summary><div class="sch">'+ord.filter(x=>x!==S.school).map(x=>cell(k,x)).join('')+'</div></details>':'<div class="sch">'+ord.map(x=>cell(k,x)).join('')+'</div>')+(k.note?'<div class="ev k">'+lk(k.note)+'</div>':'')+'</div>'}
-function underPoint(l,c){
+function underPoint(l,c,top){
  let h='';
  if(c.ev&&c.ev.length){h+='<div class="uev"><h4>الدليل على هذه المسألة</h4>'+(S.cfg.ev?c.ev.map(id=>evCard(l.evidence.find(e=>e.id===id))).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك.</div>')+'</div>'}
- if(c.kh&&c.kh.length){const ord=orderedSchools();const mine=S.cfg.kmode==='mine'&&S.school!=='none';h+='<div class="ukh"><h4>أقوال المذاهب في هذه المسألة</h4>'+c.kh.map(id=>khCard(l,l.khilaf.find(k=>k.id===id),ord,mine,true)).join('')+'</div>'}
+
+ if(c.kh&&c.kh.length){const ord=orderedSchools();const mine=S.cfg.kmode==='mine'&&S.school!=='none';const body=c.kh.map(id=>khCard(l,l.khilaf.find(k=>k.id===id),ord,mine,true)).join('');h+='<div class="ukh">'+(c.kh.length>4?'<details><summary><b>'+(top?'مسائل خلافية عامة في الدرس':'أقوال المذاهب في هذه المسألة')+' ('+AR(c.kh.length)+' مسائل)</b></summary>'+body+'</details>':'<h4>'+(top?'مسائل خلافية عامة في الدرس':'أقوال المذاهب في هذه المسألة')+'</h4>'+body)+'</div>'}
  return h}
 function vKhilaf(l){
  if(!l.khilaf.length)return '<h2>الخلاف</h2><div class="card mut">هذا الدرس يعرض قرارات وفتاوى منسوبة إلى جهاتها، وليست أقوال المذاهب الأربعة، فلا يوجد جدول خلاف مذاهب هنا. الاختلاف بين الجهات مذكور في بطاقات الحكم الفقهي.</div>';
