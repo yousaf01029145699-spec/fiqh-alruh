@@ -203,6 +203,8 @@ body.dark .search input{background-color:rgba(19,33,27,.62)}
 
 .chip.on,.btn.pri{background-color:var(--pri)!important;color:var(--onpri)!important;border-color:var(--pri)!important}
 .tgl{position:relative}.tgl::after{content:"";position:absolute;inset:-9px -4px}
+
+.under{margin:-4px 12px 10px;padding-inline-start:10px;border-inline-start:3px solid var(--gold,#b8923a)}.under h4{margin:8px 0 4px;font-size:.9rem;opacity:.8}.under .card{margin:6px 0}.allev>summary{cursor:pointer;padding:10px 0}
 </style></head><body><div id="app"><header><div class="top"><h1>فِقْهُ الرُّوح — العبادات ومعانيها</h1><button class="ib" id="darkbtn" aria-label="الوضع الليلي"></button><button class="ib setb" id="setbtn" aria-label="الإعدادات"></button></div><div class="search"><input id="q" type="search" placeholder="ابحث في الأحكام والمعاني والمواقف" aria-label="بحث"></div></header><main id="view"></main></div><nav id="navbar" aria-label="التنقل"></nav><script>const DISCLAIMER = "محتوى تعليمي موثّق بالمصادر، وليس فتوى شخصية، ومراجعته مستمرة. يُرجع لأهل العلم في النوازل.";
 const SCHOOLS = {
  "hanafi": {
@@ -237,22 +239,29 @@ const WORSHIPS = [
  "definition": "الوضوء غسل الوجه واليدين ومسح الرأس وغسل الرجلين على الصفة الواردة في آية المائدة (5:6)، تعبداً لله، وهو طهارة من الحدث الأصغر.",
  "hukm": "لا تُقبل صلاة من أحدث حتى يتوضأ، فالوضوء شرط للصلاة.",
  "hukmRef": "المائدة: 6، البخاري (135)، مسلم (225)",
+ "hukmEv": ["e3", "e1"],
  "fiqh": {
  "conditions": [
  {
  "id": "c2",
+ "ev": ["e1"],
+ "kh": ["k13", "k14", "k15", "k16"],
  "t": "الماء الطهور",
- "d": "الماء الذي يرفع الحدث هو الماء الطهور، فمن لم يجد ماء تيمم (المائدة: 6). والماء المطلق (الباقي على خلقته) يرفع الحدث والخبث باتفاق الفقهاء، ويلحق به عند الجمهور ما تغير بطول مكثه أو بما تولد منه كالطحلب. وقسم الفقهاء المياه إلى: مطلق، وطاهر مطهر مكروه، وطاهر غير مطهر، ونجس. وانفرد الحنفية بقسم المشكوك في طهوريته، وانفرد الحنابلة بقسم المحرم. والماء المتغير بطاهر مخالط تغيراً يمنع إطلاق اسم الماء عليه: طاهر مطهر عند الحنفية ما لم يغلب عليه غيره أو يتغير بالطبخ، وطاهر غير مطهر عند المالكية والشافعية وعلى المذهب عند الحنابلة. والمتغير بنجاسة نجس باتفاق الفقهاء قليلاً كان أو كثيراً. وتفصيل كل مذهب في تبويب الخلاف.",
+ "d": "الماء الذي يرفع الحدث هو الماء الطهور، فمن لم يجد ماء تيمم (المائدة: 6). والماء المطلق (الباقي على خلقته) يرفع الحدث والخبث باتفاق الفقهاء، ويلحق به عند الجمهور ما تغير بطول مكثه أو بما تولد منه كالطحلب. وقسم الفقهاء المياه إلى: مطلق، وطاهر مطهر مكروه، وطاهر غير مطهر، ونجس. وانفرد الحنفية بقسم المشكوك في طهوريته، وانفرد الحنابلة بقسم المحرم. والماء المتغير بطاهر مخالط تغيراً يمنع إطلاق اسم الماء عليه: طاهر مطهر عند الحنفية ما لم يغلب عليه غيره أو يتغير بالطبخ، وطاهر غير مطهر عند المالكية والشافعية وعلى المذهب عند الحنابلة. والمتغير بنجاسة نجس باتفاق الفقهاء قليلاً كان أو كثيراً. وتفصيل كل مذهب في «أقوال المذاهب في هذه المسألة» تحت هذه البطاقة.",
  "ref": "المائدة: 6. azharegypt.org (دروس الطهارة)، shamela.ws/book/5913/20. الموسوعة الفقهية الكويتية، مصطلحا طهارة ومياه: https://muslim-library.com/keoj/volume/29/19370/ و https://muslim-library.com/keoj/volume/29/19371/ و https://muslim-library.com/keoj/volume/29/19372/ و https://muslim-library.com/keoj/volume/29/19373/ و https://muslim-library.com/keoj/volume/29/19374/ و https://muslim-library.com/keoj/volume/39/27350/ و https://muslim-library.com/keoj/volume/39/27353/ و https://muslim-library.com/keoj/volume/39/27355/"
  },
  {
  "id": "c3",
+ "ev": ["e7"],
+ "kh": ["k7"],
  "t": "وصول الماء إلى مواضع الغسل",
  "d": "الأصل أن يصل الماء إلى العضو كله، وقد ورد الوعيد على ترك مواضع من الأقدام دون غسل.",
  "ref": "البخاري (165)"
  },
  {
  "id": "c4",
+ "ev": ["e4"],
+ "kh": ["k1"],
  "t": "النية",
  "d": "قصد الوضوء بالقلب. الحنفية: سنة. غيرهم: فرض أو شرط (انظر جدول الخلاف).",
  "ref": "البخاري (1)، مسلم (1907)"
@@ -261,24 +270,29 @@ const WORSHIPS = [
  "pillars": [
  {
  "id": "p1",
+ "ev": ["e1"],
  "t": "غسل الوجه",
  "d": "الحد عند الفقهاء: ما بين منابت شعر الرأس إلى منتهى اللحيين والذقن طولاً، ومن الأذن إلى الأذن عرضاً. واختلفوا في بياض ما بين العذار والأذن (المالكية في المشهور: ليس من الوجه. الحنفية والشافعية: منه)، وفي ما انسدل من اللحية.",
  "ref": "المائدة: 6. https://islamqa.info/ar/answers/129353، taghrib.org/ar/library/content/2305/15 (بداية المجتهد)"
  },
  {
  "id": "p2",
+ "ev": ["e1"],
  "t": "غسل اليدين مع المرفقين",
  "d": "ذهب الجمهور إلى وجوب إدخال المرفقين في الغسل. وقال زفر وابن داود: لا يجب، وهو رواية عن مالك وأحمد، ورأي ابن حزم.",
  "ref": "المائدة: 6. alsunniah.com/book/26121/1"
  },
  {
  "id": "p3",
+ "ev": ["e1"],
+ "kh": ["k4"],
  "t": "مسح الرأس",
  "d": "الفرض في القرآن هو المسح، وقدره المجزئ مختلف فيه بين المذاهب (انظر جدول الخلاف).",
  "ref": "القرآن 5:6"
  },
  {
  "id": "p4",
+ "ev": ["e1"],
  "t": "غسل الرجلين مع الكعبين",
  "d": "ذكر القرآن غسل الرجلين إلى الكعبين.",
  "ref": "المائدة: 6"
@@ -287,6 +301,7 @@ const WORSHIPS = [
  "obligations": [
  {
  "id": "o1",
+ "kh": ["k2"],
  "t": "ما يُعدّ واجباً زائداً على الفروض",
  "d": "اصطلاح الواجب يختلف بين المذاهب. عند الحنابلة: التسمية (تسقط بالنسيان) والمضمضة والاستنشاق واجبة، وعند الحنفية والمالكية والشافعية هذه من السنن. والفروض الأربعة مذكورة في الآية.",
  "ref": "انظر جدول الخلاف. وفي ثبوت حديث التسمية خلاف بين العلماء"
@@ -295,18 +310,21 @@ const WORSHIPS = [
  "sunan": [
  {
  "id": "s1",
+ "ev": ["e8"],
  "t": "السواك",
  "d": "عند كل صلاة. وفي لفظ البخاري: مع كل صلاة، وفي لفظ مسلم: عند كل صلاة. لولا خوف المشقة على الأمة لأمر بذلك.",
  "ref": "البخاري (887)، مسلم (252)"
  },
  {
  "id": "s2",
+ "ev": ["e6"],
  "t": "غسل الكفين ثلاثاً في البداية",
  "d": "قبل إدخالهما في الإناء، وهو في وصف وضوء النبي صلى الله عليه وسلم.",
  "ref": "البخاري (159)، مسلم (226)"
  },
  {
  "id": "s3",
+ "kh": ["k3"],
  "t": "المضمضة والاستنشاق",
  "d": "في حديث لقيط بن صبرة: أسبغ الوضوء وخلل بين الأصابع وبالغ في الاستنشاق إلا أن تكون صائماً. وهما سنة عند غير الحنابلة.",
  "ref": "أبو داود (142): صحيح (الألباني) كما يعرضه sunnah.com. الترمذي (788): صحيح (دار السلام) كما يعرضه sunnah.com"
@@ -331,6 +349,7 @@ const WORSHIPS = [
  },
  {
  "id": "s7",
+ "ev": ["e6"],
  "t": "ركعتان بعد الوضوء",
  "d": "في حديث عثمان رضي الله عنه وعد بالمغفرة لمن توضأ وصلى ركعتين لا يحدث فيهما نفسه بأمر دنيا.",
  "ref": "البخاري (159)، مسلم (226)"
@@ -345,6 +364,7 @@ const WORSHIPS = [
  "nullifiers": [
  {
  "id": "n1",
+ "ev": ["e1", "e3"],
  "t": "ما خرج من السبيلين",
  "d": "أصل ذلك قوله تعالى: أو جاء أحد منكم من الغائط. وفي الحديث: لا تقبل صلاة من أحدث حتى يتوضأ.",
  "ref": "المائدة: 6، البخاري (135)، مسلم (225)"
@@ -357,6 +377,7 @@ const WORSHIPS = [
  },
  {
  "id": "n3",
+ "kh": ["k8", "k9", "k10", "k11", "k12"],
  "t": "ما اختُلف فيه",
  "d": "لمس المرأة، ومس الفرج، وأكل لحم الإبل، والدم والقيء من غير السبيلين، والقهقهة في الصلاة: مختلف فيها بين المذاهب. انظر جدول الخلاف.",
  "ref": "الموسوعة الفقهية الكويتية: https://shamela.ws/book/11430bu/28949 و https://shamela.ws/book/11430bu/28953 و https://shamela.ws/book/11430bu/28935 و https://shamela.ws/book/11430bu/28951"
@@ -28209,7 +28230,8 @@ const cnt=l=>({rul:l.fiqh.conditions.length+l.fiqh.pillars.length+l.fiqh.obligat
 function lessonPct(l){const p=P(l.id);const done=Object.keys(p.steps).filter(k=>p.steps[k]).length;const tot=l.steps.length+1;return Math.round((done+(p.quiz?1:0))/tot*100)}
 /* views */
 function cardActs(id,title){return '<div class="acts"><button data-bm="'+id+'" class="'+(isBM(id)?'on':'')+'" aria-label="حفظ في المفضلة">'+(isBM(id)?'★':'☆')+'</button><button data-note="'+id+'" aria-label="إضافة ملاحظة">✎</button></div>'}
-function infoCard(l,c,secKey){const id=l.id+'.'+secKey+'.'+c.id;return '<div class="card has-acts" id="c-'+id.replace(/\./g,'_')+'">'+cardActs(id)+'<h3>'+esc(c.t)+(c.kind?' <span class="tag '+(c.kind==='تأمل'?'':'gold')+'">'+esc(c.kind)+'</span>':'')+'</h3><p>'+esc(c.d)+'</p>'+(c.ref?'<div class="ev">المصدر: '+lk(c.ref)+'</div>':'')+'</div>'}
+function infoCard(l,c,secKey){return infoCard0(l,c,secKey)+((c.ev||c.kh)?'<div class="under">'+underPoint(l,c)+'</div>':'')}
+function infoCard0(l,c,secKey){const id=l.id+'.'+secKey+'.'+c.id;return '<div class="card has-acts" id="c-'+id.replace(/\./g,'_')+'">'+cardActs(id)+'<h3>'+esc(c.t)+(c.kind?' <span class="tag '+(c.kind==='تأمل'?'':'gold')+'">'+esc(c.kind)+'</span>':'')+'</h3><p>'+esc(c.d)+'</p>'+(c.ref?'<div class="ev">المصدر: '+lk(c.ref)+'</div>':'')+'</div>'}
 const GLOSS_SRC="الموسوعة الفقهية الكويتية: حكم (ج18 ص65-66) https://shamela.ws/book/11430bu/10761 و https://shamela.ws/book/11430bu/10762 | فرض (ج32 ص95-96) https://shamela.ws/book/11430bu/20273 و https://shamela.ws/book/11430bu/20274 | استحباب (ج3 ص214-215) https://shamela.ws/book/11430bu/1761 و https://shamela.ws/book/11430bu/1762 و https://shamela.ws/book/11430bu/1763 | سنة (ج25 ص264-265) https://shamela.ws/book/11430bu/15646 و https://shamela.ws/book/11430bu/15647 و https://shamela.ws/book/11430bu/15648 | ندب (ج40 ص128) https://shamela.ws/book/11430bu/26113 | كراهة (ج34 ص221-222) https://shamela.ws/book/11430bu/21889 و https://shamela.ws/book/11430bu/21890 و https://shamela.ws/book/11430bu/21891 | تحريم (ج10 ص205-206) https://shamela.ws/book/11430bu/6077 و https://shamela.ws/book/11430bu/6078 | الحرام والمكروه عند الحنفية (واجب، ج42 ص330) https://shamela.ws/book/11430bu/28077 | إباحة (ج1) https://muslim-library.com/keoj/volume/1/185/ و https://muslim-library.com/keoj/volume/1/178/ | نفل (ج41 ص100-101) https://shamela.ws/book/11430bu/26813 و https://shamela.ws/book/11430bu/26814";
 const GLOSS_WARN=[
 ["لا يعني \"ليس حراماً\" أن الأمر سواء","الأحكام الخمسة ليست درجات متساوية. فعل المندوب وترك المكروه مطلوبان من الشارع طلباً غير جازم، والمباح ليس مطلوباً فعلاً ولا تركاً. فمن قال لغيره: لا حرج، فمعناه نفي الإثم فقط، ولا يقول إن الفعل والترك عند الشرع سواء."],
@@ -28265,9 +28287,11 @@ function vLesson(){
  if(R.b==='quiz')return bk+vQuiz(l);
  if(tab==='fiqh'){
   h+='<div class="card"><h3>التعريف</h3><p>'+esc(l.definition)+'</p><h3 style="margin-top:8px">الحكم</h3><p>'+esc(l.hukm)+'</p><div class="ev">'+lk(l.hukmRef)+'</div></div>';
+  if(l.hukmEv)h+='<div class="under">'+underPoint(l,{ev:l.hukmEv})+'</div>';
   const sec=(t,arr,k)=>'<h2>'+t+' <span class="tag">'+AR(arr.length)+'</span></h2>'+arr.map(c=>infoCard(l,c,k)).join('');
   h+=sec((l.labels&&l.labels.c)||'الشروط',l.fiqh.conditions,'c')+sec((l.labels&&l.labels.p)||'الأركان',l.fiqh.pillars,'p')+sec((l.labels&&l.labels.o)||'الواجبات',l.fiqh.obligations,'o')+sec((l.labels&&l.labels.s)||'السنن',l.fiqh.sunan,'s')+sec((l.labels&&l.labels.n)||'المبطلات والنواقض',l.fiqh.nullifiers,'n');
-  h+='<h2>الدليل من القرآن والسنة</h2>'+(S.cfg.ev?l.evidence.map(evCard).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك. فعّلها من الإعدادات، ولا تعتمد على الحكم دون دليله.</div>');
+  h+=(l.hukmEv?'<details class="allev"><summary><b>جميع أدلة الدرس في موضع واحد</b></summary>':'')+'<h2>الدليل من القرآن والسنة</h2>'+(S.cfg.ev?l.evidence.map(evCard).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك. فعّلها من الإعدادات، ولا تعتمد على الحكم دون دليله.</div>');
+  if(l.hukmEv)h+='</details>';
   h+='<h2>أخطاء شائعة وتنبيهات</h2>'+l.mistakes.map(m=>'<div class="card has-acts">'+cardActs(l.id+'.x.'+m.id)+'<h3>'+esc(m.t)+'</h3><p>'+esc(m.d)+'</p></div>').join('');
  }else{
   const emptyM=!l.meaning.why.length&&!l.meaning.symbols.length&&!l.meaning.impact.length;
@@ -28277,6 +28301,14 @@ function vLesson(){
   if(!l.meaning.why.length&&!l.meaning.symbols.length&&!l.meaning.impact.length)h+='<div class="card"><p>هذا الدرس في الأحكام وأدلتها. الأحكام في تبويب «الحكم الفقهي»، والخلاف في تبويب «الخلاف بين المذاهب».</p></div>';
  }
  return h}
+function khCard(l,k,ord,mine,inl){
+ const cell=(k,s)=>'<b class="'+(s===S.school?'pref':'')+'">'+SCHOOLS[s].name+'</b><span class="'+(s===S.school?'pref':'')+'">'+esc(k.v[s])+'</span>';
+ return '<div class="card has-acts'+(inl?' kin':'')+'">'+(inl?'':cardActs(l.id+'.k.'+k.id))+'<h3>'+esc(k.issue)+'</h3>'+(mine?'<div class="sch">'+cell(k,S.school)+'</div><details><summary>أقوال المذاهب الأخرى</summary><div class="sch">'+ord.filter(x=>x!==S.school).map(x=>cell(k,x)).join('')+'</div></details>':'<div class="sch">'+ord.map(x=>cell(k,x)).join('')+'</div>')+(k.note?'<div class="ev k">'+lk(k.note)+'</div>':'')+'</div>'}
+function underPoint(l,c){
+ let h='';
+ if(c.ev&&c.ev.length){h+='<div class="uev"><h4>الدليل على هذه المسألة</h4>'+(S.cfg.ev?c.ev.map(id=>evCard(l.evidence.find(e=>e.id===id))).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك.</div>')+'</div>'}
+ if(c.kh&&c.kh.length){const ord=orderedSchools();const mine=S.cfg.kmode==='mine'&&S.school!=='none';h+='<div class="ukh"><h4>أقوال المذاهب في هذه المسألة</h4>'+c.kh.map(id=>khCard(l,l.khilaf.find(k=>k.id===id),ord,mine,true)).join('')+'</div>'}
+ return h}
 function vKhilaf(l){
  if(!l.khilaf.length)return '<h2>الخلاف</h2><div class="card mut">هذا الدرس يعرض قرارات وفتاوى منسوبة إلى جهاتها، وليست أقوال المذاهب الأربعة، فلا يوجد جدول خلاف مذاهب هنا. الاختلاف بين الجهات مذكور في بطاقات الحكم الفقهي.</div>';
  let h='<h2>الخلاف بين المذاهب الأربعة</h2><div class="banner">لا نرجّح هنا. اختيارك للمذهب المفضل (في الإعدادات) يغيّر الترتيب فقط. مصدر كل مسألة تحتها. <details><summary>حدود التوثيق</summary>'+esc(SOURCE_NOTE)+'</details></div>';
@@ -28284,7 +28316,7 @@ function vKhilaf(l){
  const mine=S.cfg.kmode==='mine'&&S.school!=='none';
  if(mine)h+='<div class="card mut">عرض مذهبك فقط ('+SCHOOLS[S.school].name+') مع بقية المذاهب تحت كل مسألة في «أقوال المذاهب الأخرى». غيّر ذلك من الإعدادات.</div>';
  const cell=(k,s)=>'<b class="'+(s===S.school?'pref':'')+'">'+SCHOOLS[s].name+'</b><span class="'+(s===S.school?'pref':'')+'">'+esc(k.v[s])+'</span>';
- h+=l.khilaf.map(k=>'<div class="card has-acts">'+cardActs(l.id+'.k.'+k.id)+'<h3>'+esc(k.issue)+'</h3>'+(mine?'<div class="sch">'+cell(k,S.school)+'</div><details><summary>أقوال المذاهب الأخرى</summary><div class="sch">'+ord.filter(x=>x!==S.school).map(x=>cell(k,x)).join('')+'</div></details>':'<div class="sch">'+ord.map(x=>cell(k,x)).join('')+'</div>')+(k.note?'<div class="ev k">'+lk(k.note)+'</div>':'')+'</div>').join('');
+ h+=l.khilaf.map(k=>khCard(l,k,ord,mine)).join('');
  const _unused=l.khilaf.map(k=>'<div class="card has-acts">'+cardActs(l.id+'.k.'+k.id)+'<h3>'+esc(k.issue)+'</h3><div class="sch">'+ord.map(s=>'<b class="'+(s===S.school?'pref':'')+'">'+SCHOOLS[s].name+'</b><span class="'+(s===S.school?'pref':'')+'">'+esc(k.v[s])+'</span>').join('')+'</div>'+(k.note?'<div class="ev k">'+lk(k.note)+'</div>':'')+'</div>').join('');
  h+='<div class="card mut">مصدر كل مسألة مذكور تحتها. أكثر الخلايا منقول من الموسوعة الفقهية الكويتية كما هي، وبعض الخلايا رُوجعت فرادى من صفحات كتب المذاهب المطبوعة مقروءة من مصورات منشورة، والمراجعة من المصادر مستمرة ولم تكتمل.</div>';
  return h}
