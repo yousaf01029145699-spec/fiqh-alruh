@@ -114,9 +114,9 @@ function vLesson(){
  h+='<div class="seg" role="tablist"><span class="pill" style="right:'+(tab==='meaning'?'50%':'4px')+'"></span>'+tabs.map(t=>'<button role="tab" data-lens="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</div>';
  h+='<div class="sub">'+[['steps','دليل الأداء'],['khilaf','الخلاف بين المذاهب'],['quiz','اختبار قصير']].filter(t=>t[0]!=='khilaf'||l.khilaf.length).map(t=>'<button class="chip" data-go="lesson/'+l.id+'/'+t[0]+'">'+t[1]+'</button>').join('')+'</div>';
  const bk='<button class="back" data-go="lesson/'+l.id+'">‹ '+esc(l.title)+'</button>';
- if(R.b==='steps')return bk+vSteps(l)+disc();
- if(R.b==='khilaf')return bk+vKhilaf(l)+disc();
- if(R.b==='quiz')return bk+vQuiz(l)+disc();
+ if(R.b==='steps')return bk+vSteps(l);
+ if(R.b==='khilaf')return bk+vKhilaf(l);
+ if(R.b==='quiz')return bk+vQuiz(l);
  if(tab==='fiqh'){
   h+='<div class="card"><h3>التعريف</h3><p>'+esc(l.definition)+'</p><h3 style="margin-top:8px">الحكم</h3><p>'+esc(l.hukm)+'</p><div class="ev">'+lk(l.hukmRef)+'</div></div>';
   const sec=(t,arr,k)=>'<h2>'+t+' <span class="tag">'+AR(arr.length)+'</span></h2>'+arr.map(c=>infoCard(l,c,k)).join('');
@@ -130,7 +130,7 @@ function vLesson(){
   h+=sec('لماذا شُرعت؟',l.meaning.why,'mw')+sec('ما الذي تعنيه الأفعال والأذكار؟',l.meaning.symbols,'ms')+sec('الأثر في القلب والسلوك',l.meaning.impact,'mi')
   if(!l.meaning.why.length&&!l.meaning.symbols.length&&!l.meaning.impact.length)h+='<div class="card"><p>هذا الدرس في الأحكام وأدلتها. الأحكام في تبويب «الحكم الفقهي»، والخلاف في تبويب «الخلاف بين المذاهب».</p></div>';
  }
- return h+disc()}
+ return h}
 function vKhilaf(l){
  if(!l.khilaf.length)return '<h2>الخلاف</h2><div class="card mut">هذا الدرس يعرض قرارات وفتاوى منسوبة إلى جهاتها، وليست أقوال المذاهب الأربعة، فلا يوجد جدول خلاف مذاهب هنا. الاختلاف بين الجهات مذكور في بطاقات الحكم الفقهي.</div>';
  let h='<h2>الخلاف بين المذاهب الأربعة</h2><div class="banner">لا نرجّح هنا. اختيارك للمذهب المفضل (في الإعدادات) يغيّر الترتيب فقط. مصدر كل مسألة تحتها. <details><summary>حدود التوثيق</summary>'+esc(SOURCE_NOTE)+'</details></div>';
@@ -351,7 +351,7 @@ function vSettings(){
  h+=sec('ثامناً:','الخصوصية والبيانات','gear','<p class="mut">لا يرسل التطبيق أي بيانات خارج جهازك، ولا يحتاج إنترنت.'+(persist?'':' متصفحك الحالي يمنع الحفظ الدائم.')+'</p><div class="srow"><b>مسح سجل القراءة</b><button class="btn" data-clr="hist">مسح</button></div><div class="srow"><b>مسح نتائج الاختبارات</b><button class="btn" data-clr="quiz">مسح</button></div><div class="srow"><b>حذف المفضلة</b><button class="btn" data-clr="bm">حذف</button></div><div class="srow"><b>حذف الملاحظات</b><button class="btn" data-clr="notes">حذف</button></div><div class="srow"><b>حذف كل البيانات المحفوظة</b><button class="btn" data-clr="all">حذف الكل</button></div><p class="mut">كل زر حذف يطلب ضغطة تأكيد ثانية.</p><h3>نسخة احتياطية</h3><p class="mut">لا تنتقل بياناتك بين الأجهزة، وتُحذف عند حذف التطبيق. اضغط «تجهيز النسخة» ثم انسخ النص واحفظه في مكان آمن (ملاحظات هاتفك مثلاً). لاسترجاعها الصق النص واضغط «استرجاع».</p><div class="row"><button class="btn" data-exp="1">تجهيز النسخة</button><button class="btn" data-imp="1">استرجاع</button></div><textarea id="bk" dir="ltr" rows="5" style="width:100%;margin-top:8px" placeholder="الصق النسخة هنا للاسترجاع"></textarea><p class="mut" id="bkmsg"></p>');
  h+=sec('تاسعاً:','المساعدة والتواصل','help','<details><summary>دليل الاستخدام</summary><p class="mut">من «العبادات» اختر عبادة ثم درساً. في الدرس: تبويب الحكم الفقهي، وتبويب المعنى والروح (تأمل منفصل عن الأحكام)، ودليل الأداء خطوة خطوة، والخلاف بين المذاهب، واختبار قصير. زر النجمة يحفظ البطاقة، والقلم يضيف ملاحظة. «مواقف سريعة» تربط مواقف الحياة بالأحكام.</p></details><details><summary>أسئلة شائعة</summary><p class="mut"><b>هل التطبيق فتوى؟</b> لا، هو مادة تعليمية موثّقة بمصادرها ومراجعتها مستمرة، فارجع لعالم في حالتك. <b>لماذا يختلف الحكم؟</b> لأن المذاهب تختلف، ونعرض كلاً بمصدره دون ترجيح. <b>لماذا تقول «لم يُقرأ»؟</b> يعني أن المصدر المقروء لم يذكر المسألة، ولا يعني أنها غير واجبة. <b>هل أحتاج إنترنت؟</b> لا.</p></details>'+(CONTACT_NOTE?'<div class="srow"><div><b>الإبلاغ عن خطأ علمي</b><div class="mut">'+esc(CONTACT_NOTE.text)+'</div></div></div>':soon('ملاحظاتكم وتوضيحاتكم','لا توجد قناة إرسال داخل التطبيق بعد. يمكنك كتابة الملاحظة في «تأملاتي» الآن، وإرسالها بنفسك لمن أعطاك التطبيق.'))+'<details><summary>سياسة الخصوصية</summary><p class="mut">لا يجمع التطبيق بيانات شخصية ولا يرسل شيئاً إلى أي جهة. ما تكتبه يُحفظ على جهازك فقط ويُحذف بحذف التطبيق أو من قسم الخصوصية.</p></details><details><summary>حول التطبيق</summary><p class="mut">فِقْهُ الرُّوح: نموذج أولي تعليمي. المصادر: الموسوعة الفقهية الكويتية (أغلب الدروس)، والفقه الإسلامي وأدلته للزحيلي (درس سجود السهو)، وآيات من api.alquran.cloud، وأحاديث من sunnah.com. موثّق بمصادره ومراجعته مستمرة.</p></details>');
  h+='<div class="card"><button class="btn pri" data-defaults="1">استعادة الإعدادات الافتراضية</button><p class="mut">يعيد الخط والمذهب والعرض والأقسام إلى الأصل. لا يحذف محفوظاتك أو ملاحظاتك.</p></div>';
- return h+'<p class="disc">'+DISCLAIMER+'</p>'}
+ return h}
 function searchAll(q0){
  const q=norm(q0.trim());if(!q)return[];
  const toks=q.split(/\s+/).filter(Boolean);
@@ -517,7 +517,7 @@ function vCalc(){
  h+='<div class="card"><h3>التركة (اختياري)</h3>'+[['value','قيمة التركة'],['funeral','تجهيز وتكفين'],['debts','الديون'],['will','الوصية']].map(x=>'<div class="srow"><b>'+x[1]+'</b><input class="ninput" type="number" inputmode="decimal" min="0" id="ce_'+x[0]+'" value="'+CS.v[x[0]]+'" style="max-width:150px"></div>').join('')+'<div class="mut">الترتيب كما في الكتاب: التجهيز، ثم الديون، ثم الوصية (حتى الثلث، وما زاد موقوف على إجازة الورثة)، ثم القسمة على الصافي.</div></div>';
  h+='<div class="card"><h3>الورثة</h3>'+FR_HEIRS.map(x=>'<div class="srow"><b>'+x[1]+'</b><span class="crow"><button class="chip" data-cc="'+x[0]+':-1" aria-label="إنقاص">−</button><b id="cv_'+x[0]+'" style="min-width:28px;text-align:center">'+AR(CS.h[x[0]]||0)+'</b><button class="chip" data-cc="'+x[0]+':1" aria-label="زيادة">+</button></span></div>').join('')+'</div>';
  h+='<div class="row" style="justify-content:center"><button class="btn pri" data-ccalc="1">احسب</button><button class="btn" data-creset="1">مسح</button></div><div id="cres"></div>';
- return h+disc()}
+ return h}
 function calcRun(){
  ['value','funeral','debts','will'].forEach(k=>{const e=document.getElementById('ce_'+k);if(e)CS.v[k]=e.value});
  const r=faraidCalc(CS.h,{madhhab:CS.madhhab,radd:CS.radd});const box=document.getElementById('cres');if(!box)return;
