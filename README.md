@@ -7,7 +7,7 @@ Content status: verification against printed sources is in progress. `node tools
 ## Files
 - `data.js`: fiqh content (lessons, evidence, school differences, quizzes, reflections, situations). Edit fiqh content here.
 - `adhkar_data.js`: adhkar, tasbih and dua sections with sources and meaning cells (`window.ADHKAR_SECTIONS`).
-- `calc_engine.js`: inheritance calculator engine (BigInt exact fractions), inlined by build.py. Not covered: pregnancy, khuntha, missing heir, dhawi al-arham, munasakhat.
+- `calc_engine.js`: engine of the removed inheritance calculator (BigInt exact fractions), still inlined by build.py but not used by any screen. Not covered: pregnancy, khuntha, missing heir, dhawi al-arham, munasakhat.
 - `gen/`: scripts that merge the Quran and Fara'id chapters into data.js.
 - `app.js`: screens, routing, buttons, state, saving, search, quizzes, notes.
 - `style.css`: colors, layout, dark mode.
@@ -19,7 +19,7 @@ Content status: verification against printed sources is in progress. `node tools
 
 ## What exists (77 lessons)
 - الطهارة والوضوء: 15 lessons. الصلاة: 29. الزكاة والصدقة: 3. الصيام: 4. الحج والعمرة: 5. باب المتنوعات: 2. باب القرآن (أحكام القرآن وآدابه): 10. باب الفرائض (المواريث): 9.
-- Inheritance calculator (حاسبة الفرائض, route `#calc`, linked from the Fara'id chapter page): present in this version. It follows the rules of the book «فقه الفرائض: درس مختصر» only. It does not handle pregnancy, khuntha, missing heir, dhawi al-arham or munasakhat. It is being removed in a separate branch (`review-fixes`) at the owner's request; that branch is not merged.
+- Inheritance calculator: removed from the app at the owner's explicit request (it was present in build vc26). Not available in the interface. `calc_engine.js` remains in the repo, unused by the interface.
 - Also: adhkar (morning, evening, sleep, waking, tasbih, duas), quick situations (مواقف سريعة), personal notes and bookmarks, search, quizzes per lesson, terms key (مفتاح المصطلحات, inside a collapsible card on the home screen), an opening screen with the salawat, settings (font, dark mode, daily goal, glass tap sound), manual backup.
 - Coverage is partial in the shorter chapters (zakat 3 lessons, fasting 4, hajj 5 lessons); they are not complete treatments of those topics.
 
@@ -38,7 +38,7 @@ Content status: verification against printed sources is in progress. `node tools
 3. `node tools/pdf.js` makes `output/fiqh-alruh-mobile.pdf`.
 
 ## Android APK
-- This repo (main) matches build vc26 (versionCode 26, package `app.fiqhalruh`, version 0.26-prototype), made with `android/build.sh` from `output/fiqh-alruh.html`. The web build in `docs/index.html` (GitHub Pages) is the same content and features, including the daily study goal (Settings, then goal; the home screen then shows «هدف اليوم»).
+- The last APK built from this source family is vc26 (0.26-prototype, it still contained the calculator); the current source here is vc26 minus the calculator, and an APK of it has not been built yet. APKs are made with `android/build.sh` from `output/fiqh-alruh.html`. The web build in `docs/index.html` (GitHub Pages) is the same content and features, including the daily study goal (Settings, then goal; the home screen then shows «هدف اليوم»).
 - `fiqh-alruh-android-v0.14.apk` at the repo root is an old build kept only for history. Do not use it. APK files are signed with a private key that is not in this repo.
 
 ## Notes

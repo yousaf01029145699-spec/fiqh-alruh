@@ -23240,7 +23240,7 @@ const WORSHIPS = [
   "title": "باب الفرائض (المواريث)",
   "icon": "list",
   "status": "ready",
-  "blurb": "علم المواريث من كتاب «فقه الفرائض: درس مختصر»: أركان الإرث وشروطه، والتركة وحقوقها، وأصحاب الفروض، وأحوال الرجال والنساء، والعصبات، والحجب والجد مع الإخوة، وأصول المسائل والعول والرد، والمسائل الخاصة. وفي آخره حاسبة الفرائض.",
+  "blurb": "علم المواريث من كتاب «فقه الفرائض: درس مختصر»: أركان الإرث وشروطه، والتركة وحقوقها، وأصحاب الفروض، وأحوال الرجال والنساء، والعصبات، والحجب والجد مع الإخوة، وأصول المسائل والعول والرد، والمسائل الخاصة.",
   "lessons": [
    {
     "id": "f_madkhal",
@@ -24525,7 +24525,7 @@ const WORSHIPS = [
    {
     "id": "f_usul",
     "title": "أصول المسائل وحساب المواريث",
-    "hukm": "طريقة حساب أصل المسألة والعَول والرد كما في الكتاب. الحاسبة في هذا الباب تطبق هذه الأحكام.",
+    "hukm": "طريقة حساب أصل المسألة والعَول والرد كما في الكتاب.",
     "hukmRef": "فقه الفرائض: درس مختصر (علي تكر محمد، 2011)",
     "definition": "أصل المسألة هو العدد الذي تخرج منه سهام الورثة صحيحة. حدود الدرس: القاعدتان اللتان ذكرهما الكتاب، والعَول، والرد، بأمثلة الكتاب.",
     "labels": {
@@ -28190,7 +28190,6 @@ const tabName=t=>({fiqh:'الحكم الفقهي',meaning:'المعنى والر
 function vWorship(){
  if(R.a){const w=WORSHIPS.find(x=>x.id===R.a);if(!w)return'<p>غير موجود</p>';
   let h='<button class="back" data-go="worship">‹ العبادات</button><h2 style="margin-top:0">'+esc(w.title)+'</h2>';
-  if(w.id==='faraid')h+='<button class="card" style="width:100%;text-align:right" data-go="calc"><h3>حاسبة الفرائض (قسم مستقل)</h3><div class="mut">أدخل الورثة والتركة فتظهر الحصص بالكسور والمبالغ مع خطوات الحل. تطبق ما في الكتاب فقط، وليست بديلاً عن مراجعة مختص.</div></button>';
   if(w.status==='ready')h+=w.lessons.map(l=>'<button class="card" style="width:100%;text-align:right" data-go="lesson/'+l.id+'"><h3>'+esc(l.title)+'</h3><div class="mut">'+esc(l.hukm)+'</div><div class="bar"><i style="width:'+lessonPct(l)+'%"></i></div><div class="ev">التقدم: '+AR(lessonPct(l))+'٪ (خطوات الأداء والاختبار)</div></button>').join('');
   else{const o=w.overview;h+='<div class="banner">هذه نظرة عامة مختصرة. الدرس التفصيلي بالأركان والخلاف والاختبار لم يُكتب بعد.</div><div class="card"><h3>التعريف</h3><p>'+esc(o.definition)+'</p></div><div class="card"><h3>أهم ما يُعرف الآن</h3>'+o.points.map(p=>'<p>• '+esc(p)+'</p>').join('')+'</div>'+o.evidence.map(e=>evCard(e)).join('')+(o.sources?'<div class="card mut">المصادر: '+esc(o.sources)+'</div>':'')+'<div class="card mut">'+esc(o.next)+'</div>'}
   return h+disc()}
@@ -28489,7 +28488,7 @@ function vSearch(){
 function render(scroll){
  const m=$('#view');let h;const keepY=window.scrollY||0;const openSecs=[...m.querySelectorAll('details.sset')].map(d=>d.open);
  if(searchQ&&R.r!=='search'&&false){}
- switch(R.r){case 'home':h=vHome();break;case 'worship':h=vWorship();break;case 'calc':h=vCalc();break;case 'lesson':h=vLesson();break;case 'sit':h=vSit();break;case 'mine':h=vMine();break;case 'settings':h=vSettings();break;case 'search':h=vSearch();break;case 'adhkar':h=R.a?vAdhkarSec():vAdhkar();break;default:h=vHome()}
+ switch(R.r){case 'home':h=vHome();break;case 'worship':h=vWorship();break;case 'lesson':h=vLesson();break;case 'sit':h=vSit();break;case 'mine':h=vMine();break;case 'settings':h=vSettings();break;case 'search':h=vSearch();break;case 'adhkar':h=R.a?vAdhkarSec():vAdhkar();break;default:h=vHome()}
  m.innerHTML=h;m.querySelectorAll('details.sset').forEach((d,i)=>{if(openSecs[i])d.open=true});
  const nav={home:'home',worship:'worship',lesson:'worship',sit:'sit',mine:'mine',adhkar:'adhkar'}[R.r];
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===nav));
