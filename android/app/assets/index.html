@@ -31038,6 +31038,8 @@ const IC={drop:'<path d="M12 3c3 4 6 7 6 11a6 6 0 0 1-12 0c0-4 3-7 6-11z"/>',arc
 const ico=n=>'<svg viewBox="0 0 24 24">'+IC[n]+'</svg>';
 /* helpers */
 const norm=s=>String(s).replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/ء/g,'').replace(/ى/g,'ي').replace(/ة/g,'ه').toLowerCase();
+const KGAP=/لم (تنص|تقرأ|يقرأ|تذكر|تستكمل|يستكمل)|لم أقرأ|غير مقروء|مقطوع|لم يفصل|لم تفصل|قيد الاستكمال|يحتاج إلى مراجعة مصدر/;
+const kHas=(k,s)=>{const t=((k.v||{})[s]||'').replace(/[\u064B-\u0652\u0670\u0640]/g,'');return !!t.trim()&&!KGAP.test(t)};
 function toast(t){if(window.__FIQH_HOST){const m=document.getElementById('hostmsg');if(m){m.textContent=t;m.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>{m.style.display='none'},3500)}return}const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
 function toastClear(){clearTimeout(toast._t);const m=document.getElementById('hostmsg');if(m)m.style.display='none';document.querySelectorAll('.toast').forEach(d=>d.remove())}
 const isBM=id=>S.bm.some(b=>b.id===id);
@@ -31050,7 +31052,7 @@ function entries(l){const out=[],f=l.fiqh,M=l.meaning;
  add('mw','meaning',M.why,'المعنى');add('ms','meaning',M.symbols,'المعنى');add('mi','meaning',M.impact,'الأثر');
  l.steps.forEach(s=>out.push({id:l.id+'.step.'+s.n,lesson:l.id,tab:'steps',sec:'خطوة',title:s.name,text:s.action+' '+(s.dhikrNone?'':s.dhikr),ref:s.ref||''}));
  l.evidence.forEach(e=>out.push({id:l.id+'.e.'+e.id,lesson:l.id,tab:'fiqh',sec:'دليل',title:e.ref,text:e.text,ref:e.ref}));
- l.khilaf.forEach(k=>out.push({id:l.id+'.k.'+k.id,lesson:l.id,tab:'khilaf',sec:'خلاف',title:k.issue,text:SK.map(x=>SCHOOLS[x].name+': '+k.v[x]).join(' | '),ref:''}));
+ l.khilaf.forEach(k=>out.push({id:l.id+'.k.'+k.id,lesson:l.id,tab:'khilaf',sec:'خلاف',title:k.issue,text:SK.filter(x=>kHas(k,x)).map(x=>SCHOOLS[x].name+': '+k.v[x]).join(' | '),ref:''}));
  l.mistakes.forEach(m=>out.push({id:l.id+'.x.'+m.id,lesson:l.id,tab:'fiqh',sec:'أخطاء شائعة',title:m.t,text:m.d,ref:''}));
  return out}
 const ALL=[];LESSONS.forEach(l=>entries(l).forEach(e=>{e.lt=l.title;ALL.push(e)}));
@@ -31140,6 +31142,8 @@ function vLesson(){
  }
  return h}
 function khCard(l,k,ord,mine,inl){
+ ord=ord.filter(x=>kHas(k,x));if(!ord.length)return '';
+ if(mine&&!kHas(k,S.school))mine=false;
  const cell=(k,s)=>'<b class="'+(s===S.school?'pref':'')+'">'+SCHOOLS[s].name+'</b><span class="'+(s===S.school?'pref':'')+'">'+esc(k.v[s])+'</span>';
  return '<div class="card has-acts'+(inl?' kin':'')+'">'+(inl?'':cardActs(l.id+'.k.'+k.id))+'<h3>'+esc(k.issue)+'</h3>'+(mine?'<div class="sch">'+cell(k,S.school)+'</div><details><summary>أقوال المذاهب الأخرى</summary><div class="sch">'+ord.filter(x=>x!==S.school).map(x=>cell(k,x)).join('')+'</div></details>':'<div class="sch">'+ord.map(x=>cell(k,x)).join('')+'</div>')+(k.note?'<div class="ev k">'+lk(k.note)+'</div>':'')+'</div>'}
 function underPoint(l,c,top){
@@ -31150,7 +31154,7 @@ function underPoint(l,c,top){
  return h}
 function vKhilaf(l){
  if(!l.khilaf.length)return '<h2>الخلاف</h2><div class="card mut">هذا الدرس يعرض قرارات وفتاوى منسوبة إلى جهاتها، وليست أقوال المذاهب الأربعة، فلا يوجد جدول خلاف مذاهب هنا. الاختلاف بين الجهات مذكور في بطاقات الحكم الفقهي.</div>';
- let h='<h2>الخلاف بين المذاهب الأربعة</h2><div class="banner">لا نرجّح هنا. اختيارك للمذهب المفضل (في الإعدادات) يغيّر الترتيب فقط. مصدر كل مسألة تحتها. <details><summary>حدود التوثيق</summary>'+esc(SOURCE_NOTE)+'</details></div>';
+ let h='<h2>الخلاف بين المذاهب</h2><div class="banner">لا نرجّح هنا. تُعرض في كل مسألة المذاهب التي وُثّق لها قول فيها فقط. اختيارك للمذهب المفضل (في الإعدادات) يغيّر الترتيب فقط. مصدر كل مسألة تحتها. <details><summary>حدود التوثيق</summary>'+esc(SOURCE_NOTE)+'</details></div>';
  const ord=orderedSchools();
  const mine=S.cfg.kmode==='mine'&&S.school!=='none';
  if(mine)h+='<div class="card mut">عرض مذهبك فقط ('+SCHOOLS[S.school].name+') مع بقية المذاهب تحت كل مسألة في «أقوال المذاهب الأخرى». غيّر ذلك من الإعدادات.</div>';
