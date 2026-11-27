@@ -251,7 +251,7 @@ function remStateText(id){
  if(remNative()){
   if(!window.__FIQH_REMIND.stopControlReady())return 'التنبيه الصوتي متوقف حتى تفعيل الإشعارات.';
   const st=r.native;
-  if(st==='exact')return 'تنبيه دقيق بصوت إشعار الجهاز المعتاد ويكتب اسم الذكر، ويعمل والتطبيق مغلق.';
+  if(st==='exact')return 'تنبيه دقيق بمقطعك الصوتي لقسمه (وبصوت إشعار الجهاز المعتاد لغير الأقسام الأربعة) ويكتب اسم الذكر، ويعمل والتطبيق مغلق.';
   if(st==='inexact')return 'تنبيه تقريبي. فعّل «المنبهات والتذكيرات» من إعدادات النظام ليصير دقيقاً.';
   return 'التنبيه غير مفعّل من النظام.';
  }
@@ -279,7 +279,7 @@ function remTick(){
    toast(t)}})}
 const pad2=n=>String(n).padStart(2,'0');
 function adhkarRemRows(){
- let h='<p class="mut">تنبيه يومي بصوت إشعار الجهاز المعتاد ويكتب اسم الذكر في وقته. الوقت اختياري: لا تنبيه بلا وقت تحدده أنت. ولأي ذكر منفرد زر جرس بجانبه في صفحته يضبط تنبيهاً خاصاً به.</p>';
+ let h='<p class="mut">تنبيه يومي يكتب اسم الذكر في وقته، بمقطعك الصوتي الخاص بكل قسم من الأربعة (الصباح والمساء والنوم والاستيقاظ)، وبصوت إشعار الجهاز المعتاد لغيرها. الوقت اختياري: لا تنبيه بلا وقت تحدده أنت. ولأي ذكر منفرد زر جرس بجانبه في صفحته يضبط تنبيهاً خاصاً به.</p>';
  REM_SECTIONS.forEach(x=>{
   const id=x[0],r=S.adhkar.rem[id]||{},on=!!r.on,val=r.hh!=null?pad2(r.hh)+':'+pad2(r.mm||0):'';
   h+='<div class="srow"><div><b>'+esc(x[1])+'</b><div class="mut">'+esc(remStateText(id))+'</div></div><input type="time" dir="ltr" data-remtime="'+id+'" value="'+val+'" aria-label="وقت تنبيه '+esc(x[1])+'"><button class="tgl'+(on?' on':'')+'" role="switch" aria-label="تنبيه '+esc(x[1])+'" aria-checked="'+on+'" data-rem="'+id+'"><i></i></button></div>'});
@@ -382,7 +382,7 @@ function revRows(){
  const r=S.review,on=!!r.on,val=r.hh!=null?pad2(r.hh)+':'+pad2(r.mm||0):'';
  let h='<p class="mut">إشعار يومي بصوت إشعار الجهاز المعتاد، يذكّرك بدرسك اليومي ومراجعة محفوظاتك في الوقت الذي تختاره. هو نفسه المعروض في «الدراسة والمراجعة» و«الإشعارات».</p><div class="srow"><div><b>تذكير التعلم اليومي ومراجعة المحفوظات</b><div class="mut">'+esc(revStateText())+'</div></div><input type="time" dir="ltr" data-revtime="1" value="'+val+'" aria-label="وقت تذكير المراجعة"><button class="tgl'+(on?' on':'')+'" role="switch" aria-label="تذكير المراجعة" aria-checked="'+on+'" data-revtgl="1"><i></i></button></div>';
  if(remNative()&&on){h+='<div class="row">';if(!window.__FIQH_REMIND.canExact())h+='<button class="btn" data-remexact="1">تفعيل المنبهات الدقيقة</button>';if(!window.__FIQH_REMIND.notificationsGranted())h+='<button class="btn" data-remperm="1">السماح بالإشعارات</button>';h+='</div>'}
- if(remNative()&&window.__FIQH_REMIND.soundInfo){h+='<div class="row"><button class="btn" data-remtest="1">جرّب الصوت الآن</button><button class="btn" data-remsnd="1">لماذا لا يُسمع صوت؟</button><button class="btn" data-remfix="1">إعدادات إشعارات التطبيق</button></div><pre class="mut" id="sndinfo" style="white-space:pre-wrap;font-family:inherit">'+esc(sndInfoTxt)+'</pre>'}
+ if(remNative()&&window.__FIQH_REMIND.soundInfo){h+='<div class="row"><button class="btn" data-remtest="1">جرّب صوت أذكار الصباح الآن</button><button class="btn" data-remsnd="1">لماذا لا يُسمع صوت؟</button><button class="btn" data-remfix="1">إعدادات إشعارات التطبيق</button></div><pre class="mut" id="sndinfo" style="white-space:pre-wrap;font-family:inherit">'+esc(sndInfoTxt)+'</pre>'}
  return h}
 let sndInfoTxt='';
 document.addEventListener('click',ev=>{const t=ev.target.closest('[data-remtest],[data-remsnd]');if(!t||!remNative())return;if(t.dataset.remtest){try{window.__FIQH_REMIND.testSound()}catch(e){}toast('أُرسل إشعار تجريبي الآن')}try{sndInfoTxt=window.__FIQH_REMIND.soundInfo()||''}catch(e){sndInfoTxt=''}render()});

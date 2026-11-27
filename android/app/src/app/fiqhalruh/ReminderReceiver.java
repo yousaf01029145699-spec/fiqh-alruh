@@ -40,13 +40,38 @@ public class ReminderReceiver extends BroadcastReceiver {
     static final String OLD_REVIEW_CHANNEL = "review_reminders";
 
     /** Channel with an explicit default notification sound. Old ids are deleted: Android keeps a channel's first settings forever. */
+    static final String[] SECS = {"sabah", "masaa", "nawm", "istiqaz"};
+    static final String[] SEC_NAMES = {"أذكار الصباح", "أذكار المساء", "أذكار النوم", "أذكار الاستيقاظ"};
+
+    /** Section of a reminder id ("sabah" or "i:sabah|3"), or null for other reminders. */
+    static String secOf(String id) {
+        if (id == null) return null;
+        String k = id.startsWith("i:") ? id.substring(2).split("\\|")[0] : id;
+        for (String x : SECS) if (x.equals(k)) return x;
+        return null;
+    }
+
+    static String channelFor(String id) {
+        String sec = secOf(id);
+        return sec == null ? CHANNEL_ID : "adhkar_" + sec + "_v3";
+    }
+
+    /** The user's own recorded clip for a section, bundled in res/raw. */
+    static android.net.Uri clipFor(Context c, String sec) {
+        return android.net.Uri.parse("android.resource://" + c.getPackageName() + "/raw/han_waqt_" + sec);
+    }
+
     static void makeChannel(NotificationManager nm, String id, String name, String desc, int imp) {
+        makeChannel(nm, id, name, desc, imp, android.provider.Settings.System.DEFAULT_NOTIFICATION_URI);
+    }
+
+    static void makeChannel(NotificationManager nm, String id, String name, String desc, int imp, android.net.Uri sound) {
         if (nm.getNotificationChannel(id) != null) return;
         NotificationChannel ch = new NotificationChannel(id, name, imp);
         ch.setDescription(desc);
         ch.enableVibration(true);
         ch.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-        ch.setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI,
+        ch.setSound(sound,
                 new AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build());
@@ -60,6 +85,8 @@ public class ReminderReceiver extends BroadcastReceiver {
             try { nm.deleteNotificationChannel(OLD_CHANNEL_ID); } catch (Exception ignored) {}
             try { nm.deleteNotificationChannel(OLD_REVIEW_CHANNEL); } catch (Exception ignored) {}
             makeChannel(nm, CHANNEL_ID, "تنبيهات الأذكار", "تنبيهات مواعيد الأذكار والتسبيح", NotificationManager.IMPORTANCE_HIGH);
+            for (int i = 0; i < SECS.length; i++)
+                makeChannel(nm, "adhkar_" + SECS[i] + "_v3", SEC_NAMES[i], "تنبيه " + SEC_NAMES[i] + " بمقطعك الصوتي", NotificationManager.IMPORTANCE_HIGH, clipFor(c, SECS[i]));
             makeChannel(nm, REVIEW_CHANNEL, "تذكير المراجعة", "تذكير يومي بمراجعة الدروس", NotificationManager.IMPORTANCE_HIGH);
         }
     }
@@ -72,7 +99,7 @@ public class ReminderReceiver extends BroadcastReceiver {
         sb.append(nm.areNotificationsEnabled() ? "الإشعارات: مسموحة" : "الإشعارات: مغلقة للتطبيق");
         if (Build.VERSION.SDK_INT >= 26) {
             ensureChannel(c);
-            for (String id : new String[]{CHANNEL_ID, REVIEW_CHANNEL}) {
+            for (String id : new String[]{"adhkar_sabah_v3", "adhkar_masaa_v3", "adhkar_nawm_v3", "adhkar_istiqaz_v3", CHANNEL_ID, REVIEW_CHANNEL}) {
                 NotificationChannel ch = nm.getNotificationChannel(id);
                 if (ch == null) continue;
                 sb.append("\n").append(ch.getName()).append(": ")
@@ -99,7 +126,7 @@ public class ReminderReceiver extends BroadcastReceiver {
     public static void testNow(Context c) {
         ensureChannel(c);
         NotificationManager nm = c.getSystemService(NotificationManager.class);
-        if (nm != null) nm.notify("test".hashCode(), buildNotification(c, "تجربة الصوت", "test"));
+        if (nm != null) nm.notify("test".hashCode(), buildNotification(c, "تجربة الصوت", "i:sabah|test"));
     }
 
     static PendingIntent openIntent(Context c, String id) {
@@ -111,7 +138,7 @@ public class ReminderReceiver extends BroadcastReceiver {
 
     static Notification buildNotification(Context c, String label, String id) {
         Notification.Builder nb = Build.VERSION.SDK_INT >= 26
-                ? new Notification.Builder(c, CHANNEL_ID) : new Notification.Builder(c);
+                ? new Notification.Builder(c, channelFor(id)) : new Notification.Builder(c);
         nb.setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
           .setContentTitle("فِقْهُ الرُّوح")
           .setContentText("حان الآن وقت " + label)
@@ -120,7 +147,12 @@ public class ReminderReceiver extends BroadcastReceiver {
           .setVisibility(Notification.VISIBILITY_PUBLIC)
           .setCategory(Notification.CATEGORY_REMINDER)
           .setOnlyAlertOnce(false);
-        if (Build.VERSION.SDK_INT < 26) nb.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE).setPriority(Notification.PRIORITY_HIGH);
+        if (Build.VERSION.SDK_INT < 26) {
+            nb.setPriority(Notification.PRIORITY_HIGH);
+            String sec = secOf(id);
+            if (sec != null) nb.setSound(clipFor(c, sec)).setDefaults(Notification.DEFAULT_VIBRATE);
+            else nb.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+        }
         return nb.build();
     }
 
