@@ -1,55 +1,91 @@
-# فِقْهُ الرُّوح: مصدر التطبيق
+# فِقْهُ الرُّوح | Fiqh al-Ruh
 
-Source for the standalone Arabic RTL web app. Detailed lessons across purification, prayer, zakat, fasting, hajj, miscellaneous topics, Quran etiquette and inheritance (الفرائض), plus adhkar with meanings and a quick-situations (مواقف سريعة) section. Not reviewed by a religious scholar.
+## بالعربية
 
-Content status: verification against printed sources is in progress. `node tools/review.js` currently reports 95 declared content gaps across 77 lessons and 550 school-difference rows. Treat any row marked "قيد الاستكمال" or "خارج نطاق هذا الدرس" as unfinished, not as a settled ruling.
+تطبيق عربي من اليمين إلى اليسار: فقه العبادات ومعانيها، والأذكار، ومواقف سريعة، والآخرة (القيامة والجنة والنار وعلامات الساعة). يعمل بدون إنترنت. يُبنى في ملف HTML واحد، ثم يُغلَّف في تطبيق أندرويد (WebView).
 
-## Files
-- `data.js`: fiqh content (lessons, evidence, school differences, quizzes, reflections, situations). Edit fiqh content here.
-- `adhkar_data.js`: adhkar, tasbih and dua sections with sources and meaning cells (`window.ADHKAR_SECTIONS`).
-- `calc_engine.js`: engine of an inheritance calculator that was built and then removed from the app on request. It is still inlined by build.py but nothing in the interface calls it.
-- `gen/`: scripts that merge the Quran and Fara'id chapters into data.js.
-- `app.js`: screens, routing, buttons, state, saving, search, quizzes, notes.
-- `style.css`: colors, layout, dark mode.
-- `fonts.css`: Amiri and IBM Plex Sans Arabic embedded as base64 (open fonts, SIL OFL) so the app works offline.
-- `build.py`: joins the files above into one file, `output/fiqh-alruh.html`. Also checks content ids against `expected_ids.json`; pass `--approve-removal` when ids were removed on purpose.
-- `android/`: minimal Android WebView wrapper (builds the signed APK from the HTML build; the signing keystore is not part of this repo).
-- `tools/cdp.js`: automated check with headless Chrome (clicks through the screens, checks for errors and sideways scrolling, writes screenshots to `output/`).
-- `tools/pdf.js`: makes a phone-sized PDF of the content, `output/fiqh-alruh-mobile.pdf`.
+### أين أغيّر ماذا
 
-## What exists (77 lessons)
-- الطهارة والوضوء: 15 lessons. الصلاة: 29. الزكاة والصدقة: 3. الصيام: 4. الحج والعمرة: 5. باب المتنوعات: 2. باب القرآن (أحكام القرآن وآدابه): 10. باب الفرائض (المواريث): 9.
-- Also: adhkar (morning, evening, sleep, waking, tasbih, duas), quick situations (مواقف سريعة), personal notes and bookmarks, search, quizzes per lesson, terms key (مفتاح المصطلحات), settings (font, dark mode, daily goal, glass tap sound, vibration), manual backup.
-- Coverage is partial in the shorter chapters (zakat 3 lessons, fasting 4, hajj 5 lessons); they are not complete treatments of those topics.
+| أريد أن أغيّر | الملف |
+|---|---|
+| **التصميم**: الألوان والخطوط والمسافات والوضع الليلي | `style.css` (المتغيرات في أعلاه) |
+| الخطوط المضمنة | `fonts.css` (Amiri و IBM Plex Sans Arabic، مضمنة base64) |
+| شكل الشاشات والبطاقات (قوالب HTML داخل JavaScript) | `app.js` |
+| الأيقونات | الدالة `ico()` في `app.js` |
+| أيقونة التطبيق وملفات أندرويد | `android/app/res` و `android/app/AndroidManifest.xml` |
+| **المحتوى**: دروس العبادات | `data/NN_bab_*.js`، ملف لكل باب |
+| الأذكار والأدعية | `adhkar_data.js` |
+| رأس البيانات (المذاهب، الملاحظة المصدرية) | `data/00_head.js` |
 
-## What does NOT exist
-- No inheritance calculator in the interface (removed). No tajweed, tafsir, audio or full mushaf. The «سُنّة اليوم» feature is not built.
-- Not covered: pregnancy, khuntha, missing heir, dhawi al-arham and munasakhat as worked calculations; they appear only as lesson text.
-- Content gaps are declared in the app as «قيد الاستكمال» (see the Content status line above); they are not filled from unread sources.
+لا تعدّل `data.js` ولا `output/` ولا `docs/`، فهي تُولَّد من `build.py`.
 
-## Requirements
-- Python 3 (build.py uses only the standard library)
-- Node.js 22 or newer (cdp.js uses the built-in WebSocket and fetch)
-- Google Chrome or Chromium. If the command is not `google-chrome`, set it: `CHROME=chromium node tools/cdp.js`
+### البناء
+1. `python3 build.py` ينتج `output/fiqh-alruh.html` (افتحه في أي متصفح). يحتاج Python 3 فقط.
+2. الفحص الآلي (يحتاج Node 22 وChrome): `node tools/cdp.js` ثم تأكد أن آخر سطرين `overflow false` و`errs []`.
+3. لو حذفت معرّف درس عمداً: `python3 build.py --approve-removal`.
+4. للنشر على GitHub Pages: انسخ `output/fiqh-alruh.html` إلى `docs/index.html`.
 
-## Run (from this folder)
-1. `python3 build.py` makes `output/fiqh-alruh.html`. Open it in any browser; it works without internet.
-2. `node tools/cdp.js` expected last lines: `overflow false` and `errs []`.
-3. `node tools/pdf.js` makes `output/fiqh-alruh-mobile.pdf`.
+### بناء ملف APK
+1. ثبّت JDK 17 وأدوات سطر أوامر أندرويد، ثم `platforms;android-34` و`build-tools;34.0.0`.
+2. أنشئ مفتاح توقيع خاصاً بك مرة واحدة (الأمر في أعلى `android/build.sh`) واحتفظ به وبكلمة مروره. لا يوجد مفتاح ولا كلمة مرور في هذا المستودع. التحديث يُثبَّت فوق النسخة القديمة فقط إذا وُقّع بالمفتاح نفسه.
+3. من مجلد `android`:
+   `ANDROID_HOME=... KEYSTORE=... KEY_ALIAS=... KEYSTORE_PASS=... VERSION_CODE=51 VERSION_NAME=0.51 ./build.sh`
+   ارفع `VERSION_CODE` في كل إصدار. الناتج: `android/build/fiqh-alruh.apk`.
 
-## Android APK
-- Current build: version 0.37 (versionCode 37, built from main after the remove-notcovered merge, package `app.fiqhalruh`), made with `android/build.sh` from `output/fiqh-alruh.html`. It has the same content and features as the web build in `docs/index.html` (GitHub Pages), including evidence and madhhab positions under each point in all chapters.
-- Web build (docs/index.html, GitHub Pages) and the APK (versionCode 37) are in sync as of the merge that includes this line.
-- `fiqh-alruh-android-v0.14.apk` at the repo root is an old build kept only for history. Do not use it. APK files are signed with a private key that is not in this repo.
+### قواعد المحتوى والمصادر
+- كل آية وحديث وقول مذهب له مصدره في حقل المصدر. لا يُكتب رقم صفحة أو درجة حديث لم يُقرأ في المصدر نفسه.
+- خانات الخلاف تُظهر فقط المذاهب التي ثبت قولها في الصفحة. المذهب بلا قول موثق لا يُعرض.
+- ما ضعّفه محقق الكتاب في حاشيته لا يدخل درساً.
+- مصادر الحديث: صحيح البخاري ومسلم بالنص المطبوع، وغيرهما بدرجته كما في الكتاب المنقول عنه.
+- النصوص الظاهرة لا تحوي روابط ولا شرطات طويلة (—).
+- عند العرض، `app.js` يخفي تلقائياً عبارات حدود القراءة الداخلية (الدالة `cleanStr`). المحتوى في `data/` لا يتغير بذلك.
+- التطبيق تعليمي، وليس فتوى ولا يدّعي مراجعة عالم.
 
-## Notes
-- Saving: bookmarks, notes, progress and settings are stored in the browser (localStorage) on this device only. If storage is blocked they stay in memory until the page closes and a notice shows. Nothing syncs. Settings has a manual backup: "تجهيز النسخة" shows a text you copy and keep; pasting it back and pressing "استرجاع" (twice) restores notes, bookmarks and progress.
-- Sources: every ruling has a source field in `data.js`. Items not checked against a source are marked "خارج نطاق هذا الدرس" (outside the scope of this lesson). Re-check evidence against published texts before changing it.
-- Deployment: the same single HTML file can be put on any static host. Publication details are not part of this source.
+### الخصوصية
+بيانات المستخدم (المحفوظات والملاحظات والتقدم) على جهازه فقط. لا حساب ولا خادم. لا أرقام هواتف ولا أسرار في المستودع.
 
-## Scholar-review handoff
-`node tools/review.js` writes a review handoff markdown file from `data.js`: every lesson, its sources, and every school cell that has no documented position. Review comments can be tied to a lesson id and a khilaf row id. The app is an intermediate preview and has not been reviewed by a scholar.
-Visual checks: `node tools/vis.js` (tablet, dark, large font screenshots). Content checks: `LESSONS=a,b node tools/cdp.js`.
+## English
 
-## Data layout (one file per bab)
-Edit content in `data/NN_bab_<id>.js` (one file per chapter), not in `data.js`. `python3 build.py` joins `data/*.js` in name order into `data.js` (generated, kept for the tools) and builds `output/fiqh-alruh.html`. Splitting was byte-identical to the previous data.js.
+An Arabic RTL app: worship fiqh with meanings, adhkar, quick situations, and the Hereafter (Day of Judgment, Jannah, Naar, signs of the Hour). Works offline. Builds to one HTML file, wrapped in an Android WebView app.
+
+### Where to change what
+
+| To change | File |
+|---|---|
+| **Design**: colors, fonts, spacing, dark mode | `style.css` (variables at the top) |
+| Embedded fonts | `fonts.css` (Amiri, IBM Plex Sans Arabic, base64) |
+| Screen and card layout (HTML templates inside JavaScript) | `app.js` |
+| Icons | `ico()` in `app.js` |
+| App icon, Android files | `android/app/res`, `android/app/AndroidManifest.xml` |
+| **Content**: lessons | `data/NN_bab_*.js`, one file per chapter |
+| Adhkar and duas | `adhkar_data.js` |
+| Data header (madhhabs, source note) | `data/00_head.js` |
+
+Do not edit `data.js`, `output/` or `docs/`: `build.py` generates them.
+
+### Build
+1. `python3 build.py` writes `output/fiqh-alruh.html` (open it in any browser). Python 3 only.
+2. Automated check (Node 22 and Chrome): `node tools/cdp.js`; the last two lines must be `overflow false` and `errs []`.
+3. If you remove a lesson id on purpose: `python3 build.py --approve-removal`.
+4. GitHub Pages: copy `output/fiqh-alruh.html` to `docs/index.html`.
+
+### Build the APK
+1. Install JDK 17, the Android command-line tools, `platforms;android-34` and `build-tools;34.0.0`.
+2. Create your own signing key once (command at the top of `android/build.sh`). Keep it and its password. No key or password is in this repo. An update installs over an older one only if signed with the same key.
+3. From `android/`:
+   `ANDROID_HOME=... KEYSTORE=... KEY_ALIAS=... KEYSTORE_PASS=... VERSION_CODE=51 VERSION_NAME=0.51 ./build.sh`
+   Raise `VERSION_CODE` for every release. Output: `android/build/fiqh-alruh.apk`.
+
+### Content and source rules
+- Every verse, hadith and madhhab position carries its source. Never write a page number or hadith grade that was not read in that source.
+- Khilaf rows show only madhhabs whose position is documented on the page. A madhhab without a sourced position is not shown.
+- Anything the book editor weakened in a footnote stays out of lessons.
+- Visible text has no links and no long dashes.
+- At render time `app.js` removes internal reading-limit phrases (`cleanStr`). The data in `data/` is not changed by this.
+- Educational app, not a fatwa, and it does not claim scholar review.
+
+### Privacy
+User data (bookmarks, notes, progress) stays on the device. No account, no server. No phone numbers or secrets in this repo.
+
+### Other folders
+`tools/` automated checks and PDF export. `tools/history/` old one-off content scripts, kept for history only. `calc_engine.js` inheritance engine kept for the faraid screen.

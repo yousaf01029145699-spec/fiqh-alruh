@@ -24,6 +24,44 @@ const colv=(k,o)=>{o=o||S.cfg.colors[mode()];return o[k]||((k==='hd'||k==='ic')&
 function warnCol(o){o=o||S.cfg.colors[mode()];const w=[];const r1=ctr(colv('tx',o),colv('bg',o)),r2=ctr(colv('tx',o),colv('card',o)),pri=colv('pri',o),on=lum(pri)>.4?'#0B1411':'#FFFFFF',r3=ctr(pri,colv('bg',o)),r4=ctr(colv('hd',o),colv('bg',o)),r5=ctr(colv('hd',o),colv('card',o));if(r1<4.5)w.push('النص على الخلفية ضعيف الوضوح');if(r2<4.5)w.push('النص على البطاقات ضعيف الوضوح');if(r3<3)w.push('لون الأزرار قريب من الخلفية');if(r4<3||r5<3)w.push('لون العناوين قريب من الخلفية');if(S.dark&&ctr(colv('tx',o),'#0F2019')<4.5)w.push('النص على شريط العنوان الداكن ضعيف الوضوح');return w}
 const visW=w=>S.cfg.hide.indexOf(w.id)<0;
 function save(){const j=JSON.stringify(S);if(window.__FIQH_HOST){try{persist=!!window.__FIQH_HOST.save(j)}catch(e){persist=false}return}try{localStorage.setItem(KEY,j)}catch(e){persist=false}}
+
+/* ===== تنظيف النصوص الظاهرة: حذف عبارات حدود القراءة الداخلية عند العرض (البيانات في data/ لا تتغير) ===== */
+const GAPS=/قيد الاستكمال|لم (?:تنص|تُنص|تقرأ|تُقرأ|يقرأ|يُقرأ|تذكر|تذكره|تستكمل|يستكمل|تفصل|يفصل|يفصلوا|تخرج|يخرج)|لم أقرأ|غير مقروء|يحتاج إلى مراجعة|الاستكمال مستمر|لم يستكمل|ما لم يقرأ|النص مقطوع|بعدها مقطوعة|مقطوعة السياق|مقطوع فلم|نص مقطوع في أوله|انقطع فيها|مشوه في ملف|لا تغطي|في صفحاتنا|PDF|لم (?:أجد|ترد|يرد|تحدد|تعرض|تنسب|تنقل|يتحقق|يذكر|تفصّل|يذكر)|لا تذكر الصفحات|ولا تذكر الصفحات|ليس في هذه الصفحات|غياب أقوال|ولهذا الدرس حدود|يغطي الصفحات المقروءة|الصفحات المقروءة من مدخل|حدود الدرس/;
+const GAPGUARD=/«|لمن لم يقرأ|حرفاً لم يقرأ|صلاة لم يقرأ|لم يقرأ فيها|لم يقرأ به/;
+const GAPTITLE=/^(ما لم يقرأ|ما لم يفصله|قيد الاستكمال|الجزم بدرجة حكم لم تذكر)/;
+function cleanStr(s){
+ if(!GAPS.test(s))return s;
+ const parts=s.match(/[^.\n]*[.\n]|[^.\n]+$/g)||[s];
+ let out='';
+ for(const p of parts){
+  const m=GAPS.exec(p);
+  if(!m||GAPGUARD.test(p)){out+=p;continue}
+  let pre=p.slice(0,m.index);
+  const ci=pre.lastIndexOf('،');
+  if(/ و$/.test(pre)||/ ولا [^،]*$/.test(pre)){pre=pre.replace(/ (?:و|ولا [^،]*)$/,'')}
+  else if(ci>=0){pre=pre.slice(0,ci)}
+  else pre='';
+  pre=pre.trim();
+  if(pre.length<20){continue}
+  if((pre.match(/\(/g)||[]).length>(pre.match(/\)/g)||[]).length)pre+=')';
+  out+=pre+'.'+(/\n$/.test(p)?'\n':' ');
+ }
+ return out.replace(/\(\s*\)/g,'').replace(/\s+\./g,'.').trim();
+}
+function cleanObj(o){
+ if(typeof o==='string')return cleanStr(o);
+ if(Array.isArray(o)){const r=[];for(const x of o){
+   if(x&&typeof x==='object'&&!Array.isArray(x)){
+    if(typeof x.t==='string'&&GAPTITLE.test(x.t))continue;
+    cleanObj(x);
+    if('t' in x&&'d' in x&&!String(x.d).trim())continue;
+    if('t' in x&&!String(x.t).trim())continue;
+    r.push(x)}
+   else r.push(cleanObj(x))}
+  return r}
+ if(o&&typeof o==='object'){for(const k of Object.keys(o)){if(k==='ref'||k==='refs')continue;o[k]=cleanObj(o[k])}return o}
+ return o}
+WORSHIPS.forEach(w=>cleanObj(w));
 const LESSONS=[];WORSHIPS.forEach(w=>(w.lessons||[]).forEach(l=>{l._w=w;LESSONS.push(l)}));
 let _kn=0;WORSHIPS.forEach(w=>(w.lessons||[]).forEach(l=>(l.khilaf||[]).forEach(k=>{k._n=++_kn})));
 const STATUSLINE=()=>{const r=WORSHIPS.filter(w=>w.status==='ready').map(w=>w.title),o=WORSHIPS.filter(w=>w.status!=='ready').map(w=>w.title);return 'دروس مفصلة: '+r.join('، ')+'.'+(o.length?' والباقي نظرات عامة: '+o.join('، ')+'.':'')};
@@ -213,7 +251,7 @@ function soon(t,why){return '<div class="srow off"><div><b>'+t+'</b><div class="
 function sec(n,title,icon,body,open){return '<details class="card sset"'+(open?' open':'')+'><summary><span class="sico">'+ico(icon)+'</span><span>'+n+' '+title+'</span></summary>'+body+'</details>'}
 function vColors(){const o=S.cfg.colors[mode()],w=warnCol();let h='<h3>ألوان التطبيق ('+(S.dark?'الوضع الداكن':'الوضع الفاتح')+')</h3><p class="mut">اختر لوناً لكل عنصر، ويظهر أثره فوراً. الألوان تُحفظ لكل وضع على حدة. لا يُقبل نص أقل تبايناً من الحد الأدنى للقراءة.</p>';
  h+=COLS.map(c=>'<div class="srow"><b>'+c[1]+'</b><span class="crow"><input type="color" data-col="'+c[0]+'" value="'+colv(c[0]).toLowerCase()+'" aria-label="'+c[1]+'"><button class="chip" data-colreset="'+c[0]+'">'+(o[c[0]]?'الأصلي':'أصلي')+'</button></span></div>').join('');
- h+='<div class="prev" id="colprev"><b style="color:var(--hd)">معاينة: عنوان</b> <span style="color:var(--ic);display:inline-block;width:22px;vertical-align:middle">'+ico('list')+'</span><p>هذا نص تجريبي بلون النص على البطاقة.</p><button class="btn pri" type="button">زر</button> <span class="tag">وسم</span></div><p class="mut" id="colwarn" style="color:var(--bad)">'+(w.length?'تنبيه: '+w.join('، ')+'.':'')+'</p><button class="btn" data-colreset="all">استعادة الألوان الأصلية</button><p class="mut">العناوين والأيقونات تتبع لون الأزرار ما لم تختر لها لوناً مستقلاً. الثابت حالياً وسببه: لونا الصح والخطأ في الاختبارات (حتى لا يلتبس الصحيح بالخطأ)، ولون نص الأزرار (يتحول تلقائياً إلى الأسود أو الأبيض بحسب لون الزر لضمان الوضوح)، وخلفية الرأس في الوضع الداكن. زخرفة النجوم يمكن إخفاؤها من الخيار التالي.</p>'+tg('deco','إظهار زخرفة النجوم','في الرأس وعلى البطاقات')+'<p class="mut">';
+ h+='<div class="prev" id="colprev"><b style="color:var(--hd)">معاينة: عنوان</b> <span style="color:var(--ic);display:inline-block;width:22px;vertical-align:middle">'+ico('list')+'</span><p>هذا نص بلون النص على البطاقة.</p><button class="btn pri" type="button">زر</button> <span class="tag">وسم</span></div><p class="mut" id="colwarn" style="color:var(--bad)">'+(w.length?'تنبيه: '+w.join('، ')+'.':'')+'</p><button class="btn" data-colreset="all">استعادة الألوان الأصلية</button><p class="mut">العناوين والأيقونات تتبع لون الأزرار ما لم تختر لها لوناً مستقلاً. الثابت حالياً وسببه: لونا الصح والخطأ في الاختبارات (حتى لا يلتبس الصحيح بالخطأ)، ولون نص الأزرار (يتحول تلقائياً إلى الأسود أو الأبيض بحسب لون الزر لضمان الوضوح)، وخلفية الرأس في الوضع الداكن. زخرفة النجوم يمكن إخفاؤها من الخيار التالي.</p>'+tg('deco','إظهار زخرفة النجوم','في الرأس وعلى البطاقات')+'<p class="mut">';
  return h}
 
 /* ===== الأذكار والتسبيح ===== */
@@ -308,7 +346,7 @@ function vMyTasbih(){
  h+='<h3>كل تسابيحي</h3>'+myt.map(x=>{
   const iRem=S.adhkar.rem['i:myt|'+x.u]||{};
   if(mtbEditing===x.u)return '<div class="card"><textarea id="mtbedit" rows="2" style="min-height:70px">'+esc(x.t)+'</textarea><div class="srow" style="margin-top:8px"><div><b>العدد المستهدف</b></div><input type="number" id="mtbeditcnt" class="ninput" dir="ltr" min="1" max="99999" value="'+x.c+'" inputmode="numeric" aria-label="العدد المستهدف"></div><div class="row" style="margin-top:8px"><button class="btn pri" data-mtbsave="'+x.u+'">حفظ</button><button class="btn" data-mtbcancel="1">إلغاء</button></div></div>';
-  return '<div class="card'+(x.u===it.u?' cur':'')+'"><div class="srow"><div><b>'+esc(x.t)+'</b><div class="mut">'+AR(x.c)+' — العداد: '+AR(x.n||0)+' — تسبيحة خاصة بك (غير موثقة)</div></div>'+(x.u===it.u?'<span class="tag">الحالية</span>':'')+'</div>'
+  return '<div class="card'+(x.u===it.u?' cur':'')+'"><div class="srow"><div><b>'+esc(x.t)+'</b><div class="mut">'+AR(x.c)+'، العداد: '+AR(x.n||0)+'، تسبيحة خاصة بك (غير موثقة)</div></div>'+(x.u===it.u?'<span class="tag">الحالية</span>':'')+'</div>'
   +'<div class="srow wrap" style="margin-top:6px;justify-content:flex-start"><button class="ibell'+(iRem.on?' on':'')+'" data-irem="myt|'+x.u+'" aria-label="تنبيه يومي لهذه التسبيحة" aria-pressed="'+!!iRem.on+'">'+ico('bell')+'</button>'
   +(iRem.on?'<input type="time" dir="ltr" class="itime" data-iremtime="myt|'+x.u+'" value="'+(iRem.hh!=null?pad2(iRem.hh)+':'+pad2(iRem.mm||0):'')+'" aria-label="وقت تنبيه هذه التسبيحة">':'')
   +'<span style="flex:1"></span><button class="btn" data-mtbsel="'+x.u+'">اختيار</button><button class="btn" data-mtbedit="'+x.u+'">تعديل</button><button class="btn" data-mtbdel="'+x.u+'">حذف</button></div></div>'}).join('');
@@ -335,8 +373,8 @@ function vAdhkar(){
   if(s.id==='tasbih'){const tb=S.adhkar.tasbih;extra='<div class="mut">العداد: '+AR(tb.n)+' من '+AR(s.items[tb.i]?s.items[tb.i].c:33)+'</div>'}
   else{const done=s.items.filter((_,i)=>(S.adhkar.prog[s.id+'|'+i]||0)<=0&&S.adhkar.prog[s.id+'|'+i]!=null).length;extra='<div class="mut">'+AR(s.items.length)+' ذكراً'+(done?'، أتممت '+AR(done):'')+'</div>'}
   h+='<button class="card linkc" data-go="adhkar/'+s.id+'"><div class="srow"><div><b>'+esc(s.title)+'</b>'+extra+'</div><span class="tag">فتح</span></div></button>'});
- h+='<button class="card linkc" data-go="adhkar/my"><div class="srow"><div><b>دعائي</b><div class="mut">أدعية تكتبها بنفسك، تُحفظ على جهازك فقط وليست من المحتوى الموثق'+(S.adhkar.my.length?' — '+AR(S.adhkar.my.length)+' دعاء':'')+'</div></div><span class="tag">+ أضف</span></div></button>';
- h+='<button class="card linkc" data-go="adhkar/myt"><div class="srow"><div><b>سبحتي</b><div class="mut">تسابيح تكتبها بنفسك بعدّادها الخاص، تُحفظ على جهازك فقط وليست من المحتوى الموثق'+(S.adhkar.mytasbih.length?' — '+AR(S.adhkar.mytasbih.length)+' تسبيحة':'')+'</div></div><span class="tag">+ أضف</span></div></button>';
+ h+='<button class="card linkc" data-go="adhkar/my"><div class="srow"><div><b>دعائي</b><div class="mut">أدعية تكتبها بنفسك، تُحفظ على جهازك فقط وليست من المحتوى الموثق'+(S.adhkar.my.length?'، '+AR(S.adhkar.my.length)+' دعاء':'')+'</div></div><span class="tag">+ أضف</span></div></button>';
+ h+='<button class="card linkc" data-go="adhkar/myt"><div class="srow"><div><b>سبحتي</b><div class="mut">تسابيح تكتبها بنفسك بعدّادها الخاص، تُحفظ على جهازك فقط وليست من المحتوى الموثق'+(S.adhkar.mytasbih.length?'، '+AR(S.adhkar.mytasbih.length)+' تسبيحة':'')+'</div></div><span class="tag">+ أضف</span></div></button>';
  return h}
 function vAdhkarSec(){
  if(R.a==='my')return vMyDua();
@@ -352,14 +390,14 @@ function vAdhkarSec(){
    +'<span class="tbface"><span class="tbnum">'+(tb.n===0?'<i class="tbo"></i>':AR(tb.n))+'</span><span class="tbof">الهدف '+AR(it.c)+'</span><span class="tbhint">اضغط للتسبيح</span></span></button>'
    +'<div class="row" style="justify-content:center"><button class="btn" data-tbrst="1">تصفير</button><button class="btn" data-tbpick="1">تسبيحة أخرى</button></div>'
    +'<p class="mut" style="text-align:center">اضغط الدائرة الكبيرة مع كل تسبيحة، وعند بلوغ الهدف يُعلمك التطبيق ويبدأ العد من جديد.</p></div>';
-  h+='<h3>كل التسابيح</h3>'+s.items.map((x,i)=>{const iRem=S.adhkar.rem['i:'+s.id+'|'+i]||{};return '<div class="card'+(i===tb.i?' cur':'')+'"><div class="srow"><div><b>'+esc(x.t)+'</b><div class="mut">'+AR(x.c)+' — '+esc(x.s)+'</div></div>'+(i===tb.i?'<span class="tag">الحالية</span>':'')+'</div>'+metaCard(x)+'<div class="srow wrap" style="margin-top:6px;justify-content:flex-start"><button class="ibell'+(iRem.on?' on':'')+'" data-irem="'+s.id+'|'+i+'" aria-label="تنبيه يومي لهذه التسبيحة" aria-pressed="'+!!iRem.on+'">'+ico('bell')+'</button>'+(iRem.on?'<input type="time" dir="ltr" class="itime" data-iremtime="'+s.id+'|'+i+'" value="'+(iRem.hh!=null?pad2(iRem.hh)+':'+pad2(iRem.mm||0):'')+'" aria-label="وقت تنبيه هذه التسبيحة">':'')+'</div></div>'}).join('');
+  h+='<h3>كل التسابيح</h3>'+s.items.map((x,i)=>{const iRem=S.adhkar.rem['i:'+s.id+'|'+i]||{};return '<div class="card'+(i===tb.i?' cur':'')+'"><div class="srow"><div><b>'+esc(x.t)+'</b><div class="mut">'+AR(x.c)+'، '+esc(x.s)+'</div></div>'+(i===tb.i?'<span class="tag">الحالية</span>':'')+'</div>'+metaCard(x)+'<div class="srow wrap" style="margin-top:6px;justify-content:flex-start"><button class="ibell'+(iRem.on?' on':'')+'" data-irem="'+s.id+'|'+i+'" aria-label="تنبيه يومي لهذه التسبيحة" aria-pressed="'+!!iRem.on+'">'+ico('bell')+'</button>'+(iRem.on?'<input type="time" dir="ltr" class="itime" data-iremtime="'+s.id+'|'+i+'" value="'+(iRem.hh!=null?pad2(iRem.hh)+':'+pad2(iRem.mm||0):'')+'" aria-label="وقت تنبيه هذه التسبيحة">':'')+'</div></div>'}).join('');
   return h}
  s.items.forEach((it,i)=>{
   const k=s.id+'|'+i,rem=S.adhkar.prog[k]==null?it.c:S.adhkar.prog[k],done=rem<=0,iRem=S.adhkar.rem['i:'+k]||{};
   h+='<div class="card'+(done?' done':'')+'"><p class="dhikr">'+esc(it.t)+'</p>'
    +(it.f?'<p class="mut">'+esc(it.f)+'</p>':'')
    +metaCard(it)
-   +'<div class="srow src"><div class="mut">'+esc(it.s)+(it.c>1?' — '+AR(it.c)+' مرّة':'')+'</div>'
+   +'<div class="srow src"><div class="mut">'+esc(it.s)+(it.c>1?'، '+AR(it.c)+' مرّة':'')+'</div>'
    +'<button class="ibell'+(iRem.on?' on':'')+'" data-irem="'+s.id+'|'+i+'" aria-label="تنبيه يومي لهذا الذكر" aria-pressed="'+!!iRem.on+'">'+ico('bell')+'</button>'
    +(iRem.on?'<input type="time" dir="ltr" class="itime" data-iremtime="'+s.id+'|'+i+'" value="'+(iRem.hh!=null?pad2(iRem.hh)+':'+pad2(iRem.mm||0):'')+'" aria-label="وقت تنبيه هذا الذكر">':'')
    +'<button class="btn'+(done?'':' pri')+'" data-aitem="'+s.id+'|'+i+'"'+(done?' disabled':'')+'>'+(done?'✓ تم الذكر':'قرأتها'+(it.c>1?' ('+AR(rem)+')':''))+'</button></div></div>'});
@@ -471,7 +509,7 @@ document.addEventListener('click',ev=>{
 function vSettings(){
  const done=LESSONS.filter(l=>S.prog[l.id]&&S.prog[l.id].opened).length,quz=LESSONS.filter(l=>S.prog[l.id]&&S.prog[l.id].quiz).length;
  let h='<button class="back" data-go="home">‹ رجوع</button><h2 style="margin-top:0">الإعدادات</h2>';
- h+=sec('أولاً:','الحساب','home',soon('الملف الشخصي وكلمة المرور وإدارة الحساب وتسجيل الخروج','التطبيق يعمل بدون حساب وبدون خادم، فلا يوجد ما يُسجَّل الدخول إليه. لو أُضيف حساب لاحقاً سيحتاج بناءً حقيقياً وسياسة خصوصية.')+'<p class="mut">بياناتك (المحفوظات والملاحظات والتقدم) على هذا الجهاز، وتجدها في قسم الخصوصية.</p>');
+ h+=sec('أولاً:','الحساب','home',''+'<p class="mut">بياناتك (المحفوظات والملاحظات والتقدم) على هذا الجهاز، وتجدها في قسم الخصوصية.</p>');
  h+=sec('ثانياً:','المذهب الفقهي','list','<h3>المذهب المفضل</h3>'+chs('',[['none','غير محدد (كل المذاهب)']].concat(SK.map(k=>[k,SCHOOLS[k].name])),S.school,'data-school').replace(/data-school=":([^"]*)"/g,'data-school="$1"')+'<p class="mut">يمكن تغييره في أي وقت. يغيّر ترتيب الأقوال في الخلاف ولا يعني ترجيحاً.</p><h3>طريقة عرض المسائل الخلافية</h3>'+chs('kmode',[['all','المذاهب الأربعة معاً'],['mine','مذهبي أولاً والباقي تحته']],S.cfg.kmode,'data-cfgv')+(S.cfg.kmode==='mine'&&S.school==='none'?'<p class="mut">اختر مذهباً حتى يعمل هذا الخيار، وإلا تُعرض كل المذاهب.</p>':'')+tg('agree','الاتفاق أولاً','في تبويب الخلاف تُعرض أولاً المسائل التي نُصّ في مصدرها على اتفاق الفقهاء أو إجماعهم، ثم مسائل الخلاف. تُنقل كما هي في الدرس دون إعادة صياغة.')+tg('ev','إظهار أدلة الدروس','الآيات والأحاديث في تبويب الحكم الفقهي')+tg('','عرض المصادر مع كل مسألة','يبقى ظاهراً دائماً لأنه من أمانة التوثيق، ولا يمكن إخفاؤه.',true)+'<p class="mut">يميّز التطبيق بين النص الشرعي والشرح، ولا يعرض المسائل الخلافية كأنها إجماع. موضع الاتفاق يُذكر في الدرس صراحةً، وما لم يُقرأ مصدره مكتوب أنه خارج ما قُرئ.</p>',true);
  h+=sec('ثالثاً:','المحتوى العلمي','pen','<h3>مستوى عرض الدرس</h3>'+chs('lvl',[['bas','مختصر'],['mid','متوسط'],['adv','متقدم']],S.cfg.lvl||'adv','data-cfgv')+'<p class="mut">مختصر: التعريف والحكم وتحتهما تفاصيل مطوية. متوسط: كل الأقسام ظاهرة وأدلة الدرس مطوية. متقدم: كل شيء ظاهر كما هو. هذا يغيّر مقدار ما يُعرض من نصوص الدروس نفسها، ولا يستبدلها بشروح مبسطة جديدة.</p>'+'<div class="srow"><div><b>تخريج الأحاديث ودرجتها</b><div class="mut">قائمة بكل حديث ومصدره وما نُقل من درجته، مع تصفية بحسب وجود الدرجة.</div></div><button class="btn" data-go="takhrij">افتح</button></div>'+'<div class="srow"><div><b>الشرح اللغوي والنصوص الأصلية</b><div class="mut">النصوص المقتبسة والمعاني اللغوية المنقولة بجانب شرحها ومصدرها.</div></div><button class="btn" data-go="texts">افتح</button></div>'+tg('ev','أدلة القرآن والسنة','نفس مفتاح قسم المذهب'));
  const names=[['taharah','الطهارة'],['salah','الصلاة'],['zakah','الزكاة'],['siyam','الصيام'],['hajj','الحج والعمرة']];

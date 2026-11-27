@@ -8,8 +8,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 : "${ANDROID_HOME:?set ANDROID_HOME}" "${KEYSTORE:?set KEYSTORE}" "${KEY_ALIAS:?set KEY_ALIAS}" "${KEYSTORE_PASS:?set KEYSTORE_PASS}"
 BT="$ANDROID_HOME/build-tools/34.0.0"; AJ="$ANDROID_HOME/platforms/android-34/android.jar"
-SRC_HTML="${APP_HTML:-../fiqh-alruh-source/output/fiqh-alruh.html}"
-[ -f "$SRC_HTML" ] || { echo "Build the web app first (python3 build.py in fiqh-alruh-source) or set APP_HTML"; exit 1; }
+SRC_HTML="${APP_HTML:-../output/fiqh-alruh.html}"
+[ -f "$SRC_HTML" ] || { echo "Build the web app first (python3 build.py in the repo root) or set APP_HTML"; exit 1; }
 rm -rf build; mkdir -p build/classes
 cp "$SRC_HTML" app/assets/index.html
 "$BT/aapt2" compile --dir app/res -o build/res.zip
