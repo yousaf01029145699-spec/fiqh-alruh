@@ -34649,7 +34649,7 @@ let fbDraft='';
 const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
 function study(){const t=todayStr();if(!S.study||S.study.day!==t)S.study={day:t,opened:[],secs:0};return S.study}
 let lastAct=Date.now();
-const defCfg=()=>({kmode:'all',agree:false,ev:true,lh:1.85,font:'sans',comfy:false,sound:true,vib:true,deco:true,hide:[],goal:0,colors:{light:{},dark:{}}});const DEF=defCfg();
+const defCfg=()=>({lvl:'adv',kmode:'all',agree:false,ev:true,lh:1.85,font:'sans',comfy:false,sound:true,vib:true,deco:true,hide:[],goal:0,colors:{light:{},dark:{}}});const DEF=defCfg();
 S.cfg=Object.assign(defCfg(),S.cfg||{});S.adhkar=S.adhkar&&typeof S.adhkar==='object'?S.adhkar:{};S.adhkar.prog=S.adhkar.prog||{};S.adhkar.tasbih=S.adhkar.tasbih||{i:0,n:0};S.adhkar.rem=S.adhkar.rem||{};S.adhkar.my=Array.isArray(S.adhkar.my)?S.adhkar.my:[];S.adhkar.mytasbih=Array.isArray(S.adhkar.mytasbih)?S.adhkar.mytasbih:[];S.adhkar.mysel=S.adhkar.mysel||null;if(!Array.isArray(S.cfg.hide))S.cfg.hide=[];if(!S.cfg.colors||!S.cfg.colors.light||!S.cfg.colors.dark)S.cfg.colors={light:{},dark:{}};
 S.lists=(Array.isArray(S.lists)?S.lists:[]).filter(l=>l&&typeof l.id==='string'&&typeof l.name==='string'&&Array.isArray(l.items));S.review=S.review&&typeof S.review==='object'?S.review:{on:false,hh:null,mm:null};
 const COLS=[['bg','الخلفية'],['card','البطاقات'],['tx','النص'],['pri','الأزرار والعناصر المحددة والرأس'],['hd','العناوين والروابط'],['ic','الأيقونات'],['acc','اللون الذهبي (الخطوط المميزة)'],['bd','الحدود']];
@@ -34763,13 +34763,18 @@ function vLesson(){
  if(R.b==='quiz')return bk+vQuiz(l);
  if(tab==='fiqh'){
   h+='<div class="card"><h3>التعريف</h3><p>'+esc(l.definition)+'</p><h3 style="margin-top:8px">الحكم</h3><p>'+esc(l.hukm)+'</p><div class="ev">'+lk(l.hukmRef)+'</div></div>';
+  const lvl=S.cfg.lvl||'adv';
+  h+='<div class="row" style="margin:8px 0"><span class="mut">مستوى العرض:</span>'+[['bas','مختصر'],['mid','متوسط'],['adv','متقدم']].map(o=>'<button class="chip '+(lvl===o[0]?'on':'')+'" data-cfgv="lvl:'+o[0]+'">'+o[1]+'</button>').join('')+'</div>';
+  const h0=h;h='';
   if(l.pt)h+='<div class="under">'+underPoint(l,{ev:l.hukmEv,kh:l.hukmKh},1)+'</div>';
   const sec=(t,arr,k)=>(k==='n'&&!arr.length)?'':'<h2>'+t+' <span class="tag">'+AR(arr.length)+'</span></h2>'+arr.map(c=>infoCard(l,c,k)).join('');
   h+=sec((l.labels&&l.labels.c)||'الشروط',l.fiqh.conditions,'c')+sec((l.labels&&l.labels.p)||'الأركان',l.fiqh.pillars,'p')+sec((l.labels&&l.labels.o)||'الواجبات',l.fiqh.obligations,'o')+sec((l.labels&&l.labels.s)||'السنن',l.fiqh.sunan,'s')+sec((l.labels&&l.labels.n)||'المبطلات والنواقض',l.fiqh.nullifiers,'n');
-  h+=(l.pt?'<details class="allev"><summary><b>جميع أدلة الدرس في موضع واحد</b></summary>':'')+'<h2>الدليل من القرآن والسنة</h2>'+(S.cfg.ev?l.evidence.map(evCard).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك. فعّلها من الإعدادات، ولا تعتمد على الحكم دون دليله.</div>');
-  if(l.pt)h+='</details>';
+  h+=((l.pt||lvl!=='adv')?'<details class="allev"><summary><b>جميع أدلة الدرس في موضع واحد</b></summary>':'')+'<h2>الدليل من القرآن والسنة</h2>'+(S.cfg.ev?l.evidence.map(evCard).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك. فعّلها من الإعدادات، ولا تعتمد على الحكم دون دليله.</div>');
+  if(l.pt||lvl!=='adv')h+='</details>';
   if(l.fadail&&l.fadail.length)h+='<h2>فضائل وتحذيرات <span class="tag">'+AR(l.fadail.length)+'</span></h2><div class="banner">أحاديث في الفضل والتحذير، كل حديث بمصدره ودرجته. ليست أحكاماً فقهية.</div>'+l.fadail.map(f=>'<div class="card has-acts">'+cardActs(l.id+'.f.'+f.id)+'<h3>'+esc(f.t)+' <span class="tag gold">'+esc(f.grade)+'</span></h3><div class="q">'+esc(f.text)+'<small>'+esc(f.ref)+'</small></div>'+(f.sharh?'<p class="sharh"><b>شرح الحديث</b> <span class="tag">'+esc(f.sharhSrc)+'</span><br>'+esc(f.sharh)+'</p>':'')+(f.note?'<p>'+esc(f.note)+'</p>':'')+'</div>').join('');
   h+='<h2>أخطاء شائعة وتنبيهات</h2>'+l.mistakes.map(m=>'<div class="card has-acts">'+cardActs(l.id+'.x.'+m.id)+'<h3>'+esc(m.t)+'</h3><p>'+esc(m.d)+'</p></div>').join('');
+  if(lvl==='bas')h='<details class="card"><summary><b>التفاصيل: الشروط والأركان والأدلة والتنبيهات</b></summary>'+h+'</details>';
+  h=h0+h;
  }else{
   const emptyM=!l.meaning.why.length&&!l.meaning.symbols.length&&!l.meaning.impact.length;
   if(!emptyM)h+='<div class="banner">في هذا التبويب: آيات وأحاديث مصنّفة كذلك، وتأملات موسومة بـ«تأمل». التأملات اجتهاد تربوي وليست أحكاماً شرعية.</div>';
@@ -35038,6 +35043,48 @@ function renameSheet(id){
  document.body.appendChild(sh);if(window.__FIQH_HOST&&sh.showModal)sh.showModal();const inp=sh.querySelector('#lrn');inp.focus();inp.select();
  sh.querySelector('#lrc').onclick=()=>sh.remove();sh.onclick=ev=>{if(ev.target===sh)sh.remove()};
  sh.querySelector('#lrs').onclick=()=>{const n=lnameOk(inp.value,id);if(!n)return;l.name=n;save();sh.remove();toast('تمت إعادة التسمية');render()}}
+
+let tkF='all',txF='all';
+const GRQ=/حكم الألباني|الألباني|صحيح|حسن|ضعيف|صححه|حسنه|قال الترمذي|حكمه/;
+function allHadith(){
+ const map={},out=[];
+ LESSONS.forEach(l=>{
+  const add=(text,ref,grade,sharh,src,kind)=>{if(!text)return;const k=text;let o=map[k];if(!o){o=map[k]={text:text,ref:ref||'',grade:grade||'',sharh:sharh||'',src:src||'',kind:kind,ls:[]};out.push(o)}
+   if(!o.grade&&grade)o.grade=grade;if(!o.sharh&&sharh){o.sharh=sharh;o.src=src||''}if(o.ls.indexOf(l.id)<0)o.ls.push(l.id)};
+  (l.evidence||[]).forEach(e=>{if(e.type==='hadith')add(e.text,e.ref,GRQ.test(e.ref||'')?e.ref:'',e.sharh,e.sharhSrc,'دليل')});
+  (l.fadail||[]).forEach(f=>add(f.text,f.ref,f.grade&&f.grade!==PEND?f.grade:'',f.sharh,f.sharhSrc,'فضل'));
+ });
+ return out}
+function vTakhrij(){
+ const A=allHadith(),g=A.filter(x=>x.grade),n=A.length-g.length;
+ const L=tkF==='g'?g:tkF==='n'?A.filter(x=>!x.grade):A;
+ let h='<button class="back" data-go="settings">‹ الإعدادات</button><h2 style="margin-top:0">تخريج الأحاديث ودرجتها</h2><div class="banner">كل حديث في التطبيق مع مصدره وما نقله الدرس من درجته. الدرجة مكتوبة كما وردت في المصدر المقروء. غياب الدرجة هنا لا يعني أن الحديث ضعيف، بل أن الدرس لم يَنقل حكماً عليه، فارجع إلى أهل العلم وكتب التخريج.</div>';
+ h+=chs('tkf',[['all','الكل ('+AR(A.length)+')'],['g','بدرجة منقولة ('+AR(g.length)+')'],['n','بلا درجة منقولة ('+AR(n)+')']],tkF,'data-tkf');
+ h+=L.map(x=>'<div class="card"><div class="q">'+esc(x.text)+'<small>'+esc(x.ref)+'</small></div>'+(x.grade?'<p><b>الدرجة المنقولة:</b> <span class="tag gold">'+esc(gradeAr(x.grade))+'</span></p>':'<p class="mut">لا درجة منقولة في الدرس.</p>')+'<div class="row">'+x.ls.map(id=>{const l=lesson(id);return '<button class="btn" data-go="lesson/'+id+'">'+esc(l?l.title:id)+'</button>'}).join('')+'</div></div>').join('');
+ return h}
+function textsItems(){
+ const o=[],QR=/«[^»]{15,}»/g,LG=/في اللغة|لغةً|لغة\b|معناه لغة|لغوي/;
+ LESSONS.forEach(l=>{
+  const push=(kind,t,d,ref)=>{const qs=((d||'').match(QR)||[]).filter(m=>!/أقوال المذاهب في هذه المسألة|تبويب|في التطبيق/.test(m));o.push({kind:kind,l:l,t:t,d:d,ref:ref||'',qs:qs,lg:LG.test((t||'')+' '+(d||''))})};
+  if(l.definition&&LG.test(l.definition))push('def','تعريف الدرس',l.definition,l.hukmRef);
+  Object.keys(l.fiqh||{}).forEach(g=>(l.fiqh[g]||[]).forEach(x=>{if(!x||!x.d)return;{const p=o.length;push('fiqh',x.t,x.d,x.ref);const z=o[o.length-1];if(!z.qs.length&&!z.lg)o.length=p}}));
+  (l.evidence||[]).forEach(e=>{if(e.type==='hadith'&&e.sharh)o.push({kind:'sharh',l:l,t:'شرح حديث',d:e.sharh,ref:e.sharhSrc||'',qs:[],lg:false,text:e.text,hr:e.ref})});
+ });
+ return o}
+function vTexts(){
+ const A=textsItems();
+ const f=x=>txF==='q'?x.qs.length:txF==='l'?x.lg:txF==='s'?x.kind==='sharh':true;
+ const L=A.filter(f);
+ let h='<button class="back" data-go="settings">‹ الإعدادات</button><h2 style="margin-top:0">الشرح اللغوي والنصوص الأصلية</h2><div class="banner">النصوص الأصلية المنقولة بين علامتي الاقتباس «» تُعرض بجانب الشرح الذي وردت فيه وبمصدرها. المعنى اللغوي يظهر حيث ذكره المصدر فقط، وليس شرحاً لغوياً شاملاً لكل لفظ.</div>';
+ h+=chs('txf',[['all','الكل ('+AR(A.length)+')'],['q','نصوص أصلية منقولة ('+AR(A.filter(x=>x.qs.length).length)+')'],['l','معنى لغوي ('+AR(A.filter(x=>x.lg).length)+')'],['s','شرح الأحاديث ('+AR(A.filter(x=>x.kind==='sharh').length)+')']],txF,'data-txf');
+ if(!L.length)h+='<div class="card mut">لا شيء في هذا الاختيار.</div>';
+ h+=L.map(x=>{
+  let c='<div class="card"><h3>'+esc(x.t)+' <span class="tag">'+esc(x.l.title)+'</span></h3>';
+  if(x.kind==='sharh')c+='<div class="q">'+esc(x.text)+'<small>'+esc(x.hr||'')+'</small></div><p class="sharh"><b>الشرح</b> <span class="tag">'+esc(x.ref)+'</span><br>'+esc(x.d)+'</p>';
+  else{if(x.qs.length)c+='<div class="q"><b>النص الأصلي</b><br>'+x.qs.map(esc).join('<br>')+'</div>';c+='<p>'+(x.qs.length?'<b>الشرح:</b> ':'')+esc(x.d)+'</p>'+(x.ref?'<div class="ev">'+lk(x.ref)+'</div>':'')}
+  return c+'<div class="row"><button class="btn" data-go="lesson/'+x.l.id+'">افتح الدرس</button></div></div>'}).join('');
+ return h}
+document.addEventListener('click',ev=>{const t=ev.target.closest('[data-tkf],[data-txf]');if(!t)return;if(t.dataset.tkf!==undefined){tkF=t.dataset.tkf.split(':')[1]}else{txF=t.dataset.txf.split(':')[1]}render()});
 function vLists(){
  let h='<button class="back" data-go="settings">‹ الإعدادات</button><h2 style="margin-top:0">قوائم المسائل المهمة</h2><div class="banner">قوائم تنشئها بنفسك لجمع مسائل الخلاف التي تريد الرجوع إليها. تُضاف المسألة من زر «إلى قائمة» أسفل بطاقتها في تبويب الخلاف. تُحفظ على جهازك فقط.</div>';
  h+='<div class="card"><div class="row"><input id="lnew" maxlength="40" placeholder="اسم القائمة الجديدة" style="flex:1;min-width:0"><button class="btn pri" data-lnew="1">إنشاء</button></div></div>';
@@ -35073,7 +35120,7 @@ function vSettings(){
  let h='<button class="back" data-go="home">‹ رجوع</button><h2 style="margin-top:0">الإعدادات</h2>';
  h+=sec('أولاً:','الحساب','home',soon('الملف الشخصي وكلمة المرور وإدارة الحساب وتسجيل الخروج','التطبيق يعمل بدون حساب وبدون خادم، فلا يوجد ما يُسجَّل الدخول إليه. لو أُضيف حساب لاحقاً سيحتاج بناءً حقيقياً وسياسة خصوصية.')+'<p class="mut">بياناتك (المحفوظات والملاحظات والتقدم) على هذا الجهاز، وتجدها في قسم الخصوصية.</p>');
  h+=sec('ثانياً:','المذهب الفقهي','list','<h3>المذهب المفضل</h3>'+chs('',[['none','غير محدد (كل المذاهب)']].concat(SK.map(k=>[k,SCHOOLS[k].name])),S.school,'data-school').replace(/data-school=":([^"]*)"/g,'data-school="$1"')+'<p class="mut">يمكن تغييره في أي وقت. يغيّر ترتيب الأقوال في الخلاف ولا يعني ترجيحاً.</p><h3>طريقة عرض المسائل الخلافية</h3>'+chs('kmode',[['all','المذاهب الأربعة معاً'],['mine','مذهبي أولاً والباقي تحته']],S.cfg.kmode,'data-cfgv')+(S.cfg.kmode==='mine'&&S.school==='none'?'<p class="mut">اختر مذهباً حتى يعمل هذا الخيار، وإلا تُعرض كل المذاهب.</p>':'')+tg('agree','الاتفاق أولاً','في تبويب الخلاف تُعرض أولاً المسائل التي نُصّ في مصدرها على اتفاق الفقهاء أو إجماعهم، ثم مسائل الخلاف. تُنقل كما هي في الدرس دون إعادة صياغة.')+tg('ev','إظهار أدلة الدروس','الآيات والأحاديث في تبويب الحكم الفقهي')+tg('','عرض المصادر مع كل مسألة','يبقى ظاهراً دائماً لأنه من أمانة التوثيق، ولا يمكن إخفاؤه.',true)+'<p class="mut">يميّز التطبيق بين النص الشرعي والشرح، ولا يعرض المسائل الخلافية كأنها إجماع. موضع الاتفاق يُذكر في الدرس صراحةً، وما لم يُقرأ مصدره مكتوب أنه خارج ما قُرئ.</p>',true);
- h+=sec('ثالثاً:','المحتوى العلمي','pen',soon('مستوى الشرح (مبتدئ، متوسط، متقدم)','الدروس مكتوبة بمستوى واحد حالياً. لا يوجد محتوى بثلاثة مستويات.')+soon('تخريج الأحاديث ودرجتها','تظهر الدرجة حيث نُقلت من المصدر، والأحاديث التي نقلتها الموسوعة بلا تخريج مكتوب عليها ذلك. لا يوجد تخريج شامل.')+soon('الشرح اللغوي والنصوص الأصلية بجانب الشرح','لم يُبنَ بعد.')+tg('ev','أدلة القرآن والسنة','نفس مفتاح قسم المذهب'));
+ h+=sec('ثالثاً:','المحتوى العلمي','pen','<h3>مستوى عرض الدرس</h3>'+chs('lvl',[['bas','مختصر'],['mid','متوسط'],['adv','متقدم']],S.cfg.lvl||'adv','data-cfgv')+'<p class="mut">مختصر: التعريف والحكم وتحتهما تفاصيل مطوية. متوسط: كل الأقسام ظاهرة وأدلة الدرس مطوية. متقدم: كل شيء ظاهر كما هو. هذا يغيّر مقدار ما يُعرض من نصوص الدروس نفسها، ولا يستبدلها بشروح مبسطة جديدة.</p>'+'<div class="srow"><div><b>تخريج الأحاديث ودرجتها</b><div class="mut">قائمة بكل حديث ومصدره وما نُقل من درجته، مع تصفية بحسب وجود الدرجة.</div></div><button class="btn" data-go="takhrij">افتح</button></div>'+'<div class="srow"><div><b>الشرح اللغوي والنصوص الأصلية</b><div class="mut">النصوص المقتبسة والمعاني اللغوية المنقولة بجانب شرحها ومصدرها.</div></div><button class="btn" data-go="texts">افتح</button></div>'+tg('ev','أدلة القرآن والسنة','نفس مفتاح قسم المذهب'));
  const names=[['taharah','الطهارة'],['salah','الصلاة'],['zakah','الزكاة'],['siyam','الصيام'],['hajj','الحج والعمرة']];
  const ws=WORSHIPS.map(w=>[w.id,w.title]);
  h+=sec('رابعاً:','العبادات الظاهرة','list','<p class="mut">اختر الأقسام التي تريد رؤيتها في الرئيسية وقائمة العبادات.</p>'+ws.map(w=>'<div class="srow"><b>'+esc(w[1])+'</b><button class="tgl'+(S.cfg.hide.indexOf(w[0])<0?' on':'')+'" role="switch" aria-label="'+esc(w[1])+'" aria-checked="'+(S.cfg.hide.indexOf(w[0])<0)+'" data-sec="'+w[0]+'"><i></i></button></div>').join('')+soon('الأذكار والأدعية المتعلقة بالعبادات، وأحكام الجنائز','لم تُكتب دروسها بعد، فلا يوجد ما يُظهر أو يُخفى.'));
@@ -35130,7 +35177,7 @@ function vSearch(){
 function render(scroll){
  const m=$('#view');let h;const keepY=window.scrollY||0;const openSecs=[...m.querySelectorAll('details.sset')].map(d=>d.open);
  if(searchQ&&R.r!=='search'&&false){}
- switch(R.r){case 'home':h=vHome();break;case 'worship':h=vWorship();break;case 'lesson':h=vLesson();break;case 'sit':h=vSit();break;case 'gloss':h=vGloss();break;case 'mine':h=vMine();break;case 'settings':h=vSettings();break;case 'lists':h=vLists();break;case 'search':h=vSearch();break;case 'adhkar':h=R.a?vAdhkarSec():vAdhkar();break;default:h=vHome()}
+ switch(R.r){case 'home':h=vHome();break;case 'worship':h=vWorship();break;case 'lesson':h=vLesson();break;case 'sit':h=vSit();break;case 'gloss':h=vGloss();break;case 'mine':h=vMine();break;case 'settings':h=vSettings();break;case 'lists':h=vLists();break;case 'takhrij':h=vTakhrij();break;case 'texts':h=vTexts();break;case 'search':h=vSearch();break;case 'adhkar':h=R.a?vAdhkarSec():vAdhkar();break;default:h=vHome()}
  m.innerHTML=h;m.querySelectorAll('details.sset').forEach((d,i)=>{if(openSecs[i])d.open=true});
  const nav={home:'home',worship:'worship',lesson:'worship',sit:'sit',mine:'mine',adhkar:'adhkar'}[R.r];
  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.go===nav));
