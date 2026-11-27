@@ -48,6 +48,7 @@ function entries(l){const out=[],f=l.fiqh,M=l.meaning;
  l.steps.forEach(s=>out.push({id:l.id+'.step.'+s.n,lesson:l.id,tab:'steps',sec:'خطوة',title:s.name,text:s.action+' '+(s.dhikrNone?'':s.dhikr),ref:s.ref||''}));
  l.evidence.forEach(e=>out.push({id:l.id+'.e.'+e.id,lesson:l.id,tab:'fiqh',sec:'دليل',title:e.ref,text:e.text,ref:e.ref}));
  l.khilaf.forEach(k=>out.push({id:l.id+'.k.'+k.id,lesson:l.id,tab:'khilaf',sec:'خلاف',title:k.issue,text:SK.filter(x=>kHas(k,x)).map(x=>SCHOOLS[x].name+': '+k.v[x]).join(' | '),ref:''}));
+ (l.fadail||[]).forEach(f=>out.push({id:l.id+'.f.'+f.id,lesson:l.id,tab:'fiqh',sec:'فضائل وتحذيرات',title:f.t,text:f.text,ref:f.ref}));
  l.mistakes.forEach(m=>out.push({id:l.id+'.x.'+m.id,lesson:l.id,tab:'fiqh',sec:'أخطاء شائعة',title:m.t,text:m.d,ref:''}));
  return out}
 const ALL=[];LESSONS.forEach(l=>entries(l).forEach(e=>{e.lt=l.title;ALL.push(e)}));
@@ -127,6 +128,7 @@ function vLesson(){
   h+=sec((l.labels&&l.labels.c)||'الشروط',l.fiqh.conditions,'c')+sec((l.labels&&l.labels.p)||'الأركان',l.fiqh.pillars,'p')+sec((l.labels&&l.labels.o)||'الواجبات',l.fiqh.obligations,'o')+sec((l.labels&&l.labels.s)||'السنن',l.fiqh.sunan,'s')+sec((l.labels&&l.labels.n)||'المبطلات والنواقض',l.fiqh.nullifiers,'n');
   h+=(l.pt?'<details class="allev"><summary><b>جميع أدلة الدرس في موضع واحد</b></summary>':'')+'<h2>الدليل من القرآن والسنة</h2>'+(S.cfg.ev?l.evidence.map(evCard).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك. فعّلها من الإعدادات، ولا تعتمد على الحكم دون دليله.</div>');
   if(l.pt)h+='</details>';
+  if(l.fadail&&l.fadail.length)h+='<h2>فضائل وتحذيرات <span class="tag">'+AR(l.fadail.length)+'</span></h2><div class="banner">أحاديث في الفضل والتحذير، كل حديث بمصدره ودرجته. ليست أحكاماً فقهية.</div>'+l.fadail.map(f=>'<div class="card has-acts">'+cardActs(l.id+'.f.'+f.id)+'<h3>'+esc(f.t)+' <span class="tag gold">'+esc(f.grade)+'</span></h3><div class="q">'+esc(f.text)+'<small>'+esc(f.ref)+'</small></div>'+(f.sharh?'<p class="sharh"><b>شرح الحديث</b> <span class="tag">'+esc(f.sharhSrc)+'</span><br>'+esc(f.sharh)+'</p>':'')+(f.note?'<p>'+esc(f.note)+'</p>':'')+'</div>').join('');
   h+='<h2>أخطاء شائعة وتنبيهات</h2>'+l.mistakes.map(m=>'<div class="card has-acts">'+cardActs(l.id+'.x.'+m.id)+'<h3>'+esc(m.t)+'</h3><p>'+esc(m.d)+'</p></div>').join('');
  }else{
   const emptyM=!l.meaning.why.length&&!l.meaning.symbols.length&&!l.meaning.impact.length;
