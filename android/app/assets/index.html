@@ -205,6 +205,8 @@ body.dark .search input{background-color:rgba(19,33,27,.62)}
 .tgl{position:relative}.tgl::after{content:"";position:absolute;inset:-9px -4px}
 
 .under{margin:-4px 12px 10px;padding-inline-start:10px;border-inline-start:3px solid var(--gold,#b8923a)}.under h4{margin:8px 0 4px;font-size:.9rem;opacity:.8}.under .card{margin:6px 0}.allev>summary{cursor:pointer;padding:10px 0}
+
+.sharh{font-size:.92em;line-height:1.9;border-right:3px solid var(--gold,#b8923a);padding:6px 10px;margin:8px 0;background:rgba(184,146,58,.07)}
 </style></head><body><div id="app"><header><div class="top"><h1>فِقْهُ الرُّوح — العبادات ومعانيها</h1><button class="ib" id="darkbtn" aria-label="الوضع الليلي"></button><button class="ib setb" id="setbtn" aria-label="الإعدادات"></button></div><div class="search"><input id="q" type="search" placeholder="ابحث في الأحكام والمعاني والمواقف" aria-label="بحث"></div></header><main id="view"></main></div><nav id="navbar" aria-label="التنقل"></nav><script>const DISCLAIMER = "محتوى تعليمي موثّق بالمصادر، وليس فتوى شخصية. يُرجع لأهل العلم في النوازل.";
 const SCHOOLS = {
  "hanafi": {
@@ -24729,35 +24731,45 @@ const WORSHIPS = [
    "type": "hadith",
    "text": "مَنْ لَمْ يَرْحَمْ صَغِيرَنَا وَيَعْرِفْ حَقَّ كَبِيرِنَا فَلَيْسَ مِنَّا",
    "ref": "رواه أبو داود (4943)، وصححه الألباني",
-   "exact": true
+   "exact": true,
+   "sharh": "أي بما يستحقه من التعظيم والتبجيل ( فليس منا ) : أي من أهل سنتنا",
+   "sharhSrc": "عون المعبود"
   },
   {
    "id": "e2",
    "type": "hadith",
    "text": "إِنَّ مِنْ إِجْلاَلِ اللَّهِ إِكْرَامَ ذِي الشَّيْبَةِ الْمُسْلِمِ وَحَامِلِ الْقُرْآنِ غَيْرِ الْغَالِي فِيهِ وَالْجَافِي عَنْهُ وَإِكْرَامَ ذِي السُّلْطَانِ الْمُقْسِطِ",
    "ref": "رواه أبو داود (4843)، وحسنه الألباني",
-   "exact": true
+   "exact": true,
+   "sharh": "أي تعظيم الشيخ الكبير في الإسلام بتوقيره في المجالس والرفق به والشفقة عليه",
+   "sharhSrc": "عون المعبود"
   },
   {
    "id": "e3",
    "type": "hadith",
    "text": "مَنْ لاَ يَرْحَمُ لاَ يُرْحَمُ",
    "ref": "رواه البخاري (5997)",
-   "exact": true
+   "exact": true,
+   "sharh": "فيه الحض على استعمال الرحمة لجميع الخلق",
+   "sharhSrc": "فتح الباري"
   },
   {
    "id": "e4",
    "type": "hadith",
    "text": "إِنَّهُ مَنْ لاَ يَرْحَمْ لاَ يُرْحَمْ",
    "ref": "رواه مسلم (2318)",
-   "exact": true
+   "exact": true,
+   "sharh": "قال العلماء : هذا عام يتناول رحمة الأطفال وغيرهم",
+   "sharhSrc": "شرح النووي على مسلم"
   },
   {
    "id": "e5",
    "type": "hadith",
    "text": "يَا غُلاَمُ أَتَأْذَنُ لِي أَنْ أُعْطِيَهُ الأَشْيَاخَ",
    "ref": "رواه البخاري (2351)",
-   "exact": true
+   "exact": true,
+   "sharh": "وطيب نفسه مع ذلك بالاستئذان لبيان الحكم وأن السنة تقديم الأيمن ولو كان مفضولا",
+   "sharhSrc": "فتح الباري"
   }
  ],
  "khilaf": [],
@@ -31272,7 +31284,7 @@ function vWorship(){
   else{const o=w.overview;h+='<div class="banner">هذه نظرة عامة مختصرة. الدرس التفصيلي بالأركان والخلاف والاختبار لم يُكتب بعد.</div><div class="card"><h3>التعريف</h3><p>'+esc(o.definition)+'</p></div><div class="card"><h3>أهم ما يُعرف الآن</h3>'+o.points.map(p=>'<p>• '+esc(p)+'</p>').join('')+'</div>'+o.evidence.map(e=>evCard(e)).join('')+(o.sources?'<div class="card mut">المصادر: '+esc(o.sources)+'</div>':'')+'<div class="card mut">'+esc(o.next)+'</div>'}
   return h}
  return '<h2 style="margin-top:0">العبادات</h2><button class="card" style="width:100%;text-align:right" data-go="gloss"><span class="tag gold">مفتاح المصطلحات</span><h3>معنى الفرض والمندوب والمباح والمكروه والحرام</h3><div class="mut">افتحها مباشرة بضغطة واحدة</div></button>'+WORSHIPS.filter(visW).map(w=>'<button class="card" style="width:100%;text-align:right;display:flex;gap:12px;align-items:center" data-go="worship/'+w.id+'"><div class="ico" style="color:var(--pri)">'+ico(w.icon)+'</div><div><h3>'+esc(w.title)+'</h3><div class="mut">'+esc(w.blurb)+'</div></div></button>').join('')}
-function evCard(e){return '<div class="card"><div class="q">'+(e.type==='quran'?'﴿ ':'')+esc(e.text)+(e.type==='quran'?' ﴾':'')+'<small>'+(e.type==='quran'?'آية':'حديث')+' | '+esc(e.ref)+(e.exact===false?' | نقل بالمعنى':'')+'</small></div></div>'}
+function evCard(e){return '<div class="card"><div class="q">'+(e.type==='quran'?'﴿ ':'')+esc(e.text)+(e.type==='quran'?' ﴾':'')+'<small>'+(e.type==='quran'?'آية':'حديث')+' | '+esc(e.ref)+(e.exact===false?' | نقل بالمعنى':'')+'</small></div>'+(e.sharh?'<p class="sharh"><b>شرح الحديث</b> <span class="tag">'+esc(e.sharhSrc)+'</span><br>'+esc(e.sharh)+'</p>':'')+'</div>'}
 function vLesson(){
  const l=lesson(R.a);if(!l)return'<p>غير موجود</p>';
  P(l.id).opened=true;
