@@ -10,13 +10,13 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
-import android.speech.tts.TextToSpeech;
-import android.speech.tts.UtteranceProgressListener;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Locale;
 
 /**
  * Foreground service that owns the audible part of one fired reminder:
@@ -39,9 +39,8 @@ public class ReminderService extends Service {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private PowerManager.WakeLock wl;
-    private TextToSpeech tts;
     private boolean stopping;
-    private boolean speechDone;
+    private MediaPlayer mp;
 
     @Override public IBinder onBind(Intent i) { return null; }
 
@@ -59,7 +58,6 @@ public class ReminderService extends Service {
         catch (JSONException e) { r = null; }
         if (r == null) { finishNow(); return START_NOT_STICKY; }
         final String label = r.optString("label", "الذكر");
-        final boolean speak = r.optBoolean("speak", true);
 
         // The receiver already skipped this occurrence when no stop control is
         // usable; re-check here because the state can change between alarm and
@@ -78,43 +76,36 @@ public class ReminderService extends Service {
         wl.acquire(MAX_MS); // platform backstop; finishNow is the normal path
         handler.postDelayed(this::finishNow, MAX_MS);
 
-        speechDone = !speak;
-        if (speak) speakName("حان الآن وقت " + label);
-        else finishNow();
+        playSystemSound();
         return START_NOT_STICKY;
     }
 
-    private void speakName(String text) {
-        tts = new TextToSpeech(this, status -> {
-            if (stopping) return;
-            if (status != TextToSpeech.SUCCESS) { speechDone = true; maybeFinish(); return; }
+    /** Plays the device's own default notification sound once (a recorded system sound; no speech synthesis). */
+    private void playSystemSound() {
+        try {
+            Uri u = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            if (u == null) { finishNow(); return; }
+            mp = new MediaPlayer();
+            mp.setDataSource(this, u);
             if (Build.VERSION.SDK_INT >= 21) {
-                tts.setAudioAttributes(new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
+                mp.setAudioAttributes(new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build());
             }
-            int lang = tts.setLanguage(new Locale("ar"));
-            if (lang == TextToSpeech.LANG_MISSING_DATA || lang == TextToSpeech.LANG_NOT_SUPPORTED) {
-                speechDone = true; maybeFinish(); return;
-            }
-            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                @Override public void onStart(String id) {}
-                @Override public void onDone(String id) { speechDone = true; maybeFinish(); }
-                @Override public void onError(String id) { speechDone = true; maybeFinish(); }
-            });
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "adhkar_reminder");
-        });
-    }
-
-    private void maybeFinish() {
-        if (speechDone) finishNow();
+            mp.setOnCompletionListener(m -> finishNow());
+            mp.setOnErrorListener((m, w, e) -> { finishNow(); return true; });
+            mp.prepare();
+            mp.start();
+        } catch (Exception e) {
+            finishNow();
+        }
     }
 
     private synchronized void finishNow() {
         if (stopping) return;
         stopping = true;
         handler.removeCallbacksAndMessages(null);
-        try { if (tts != null) tts.shutdown(); } catch (Exception ignored) {}
+        try { if (mp != null) { mp.release(); mp = null; } } catch (Exception ignored) {}
         try { if (wl != null && wl.isHeld()) wl.release(); } catch (Exception ignored) {}
         if (Build.VERSION.SDK_INT >= 24) stopForeground(STOP_FOREGROUND_REMOVE);
         else stopForeground(true);

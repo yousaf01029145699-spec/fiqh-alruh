@@ -77,16 +77,15 @@ public class ReminderReceiver extends BroadcastReceiver {
 
     static void playTone(Context c) {
         try {
-            Uri alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-            if (alarm == null) alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Uri alarm = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             MediaPlayer mp = new MediaPlayer();
             mp.setDataSource(c, alarm);
             if (Build.VERSION.SDK_INT >= 21) {
                 mp.setAudioAttributes(new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build());
             } else {
-                mp.setAudioStreamType(android.media.AudioManager.STREAM_ALARM);
+                mp.setAudioStreamType(android.media.AudioManager.STREAM_NOTIFICATION);
             }
             mp.setWakeMode(c, PowerManager.PARTIAL_WAKE_LOCK);
             mp.setOnCompletionListener(MediaPlayer::release);
@@ -112,11 +111,42 @@ public class ReminderReceiver extends BroadcastReceiver {
         return true;
     }
 
+    public static final String REVIEW_ID = "review";
+    public static final String REVIEW_CHANNEL = "review_reminders";
+
+    /** Daily review reminder: one notification with the device's default notification sound. No service, no speech. */
+    private void onReview(Context c, String id) {
+        try {
+            JSONObject r = ReminderStore.get(c, id);
+            if (r == null) return;
+            NotificationManager nm = c.getSystemService(NotificationManager.class);
+            if (nm != null && nm.areNotificationsEnabled()) {
+                if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(REVIEW_CHANNEL) == null) {
+                    NotificationChannel ch = new NotificationChannel(
+                            REVIEW_CHANNEL, "تذكير المراجعة", NotificationManager.IMPORTANCE_DEFAULT);
+                    ch.setDescription("تذكير يومي بمراجعة الدروس");
+                    nm.createNotificationChannel(ch);
+                }
+                Notification.Builder nb = Build.VERSION.SDK_INT >= 26
+                        ? new Notification.Builder(c, REVIEW_CHANNEL) : new Notification.Builder(c);
+                nb.setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+                  .setContentTitle("فِقْهُ الرُّوح")
+                  .setContentText(r.optString("label", "وقت المراجعة"))
+                  .setContentIntent(openIntent(c, id))
+                  .setAutoCancel(true);
+                if (Build.VERSION.SDK_INT < 26) nb.setDefaults(Notification.DEFAULT_SOUND);
+                nm.notify(id.hashCode(), nb.build());
+            }
+        } catch (JSONException ignored) {}
+        ReminderScheduler.schedule(c, id); // tomorrow's occurrence
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         final String id = intent.getStringExtra(ReminderScheduler.EXTRA_ID);
         if (id == null) return;
         final Context c = context.getApplicationContext();
+        if (REVIEW_ID.equals(id)) { onReview(c, id); return; }
 
         // No usable stop control: skip this occurrence entirely (no tone, no
         // speech, nothing invisible) and still schedule tomorrow's, in case
