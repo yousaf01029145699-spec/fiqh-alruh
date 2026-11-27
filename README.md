@@ -50,3 +50,6 @@ Content status: verification against printed sources is in progress. `node tools
 ## Scholar-review handoff
 `node tools/review.js` writes a review handoff markdown file from `data.js`: every lesson, its sources, and every school cell that has no documented position. Review comments can be tied to a lesson id and a khilaf row id. The app is an intermediate preview and has not been reviewed by a scholar.
 Visual checks: `node tools/vis.js` (tablet, dark, large font screenshots). Content checks: `LESSONS=a,b node tools/cdp.js`.
+
+## Data layout (one file per bab)
+Edit content in `data/NN_bab_<id>.js` (one file per chapter), not in `data.js`. `python3 build.py` joins `data/*.js` in name order into `data.js` (generated, kept for the tools) and builds `output/fiqh-alruh.html`. Splitting was byte-identical to the previous data.js.
