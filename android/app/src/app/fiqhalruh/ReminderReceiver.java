@@ -35,20 +35,71 @@ import org.json.JSONObject;
  * heads-up notification plus audio, not a screen takeover.
  */
 public class ReminderReceiver extends BroadcastReceiver {
-    public static final String CHANNEL_ID = "adhkar_reminders";
+    public static final String CHANNEL_ID = "adhkar_reminders_v2";
+    static final String OLD_CHANNEL_ID = "adhkar_reminders";
+    static final String OLD_REVIEW_CHANNEL = "review_reminders";
+
+    /** Channel with an explicit default notification sound. Old ids are deleted: Android keeps a channel's first settings forever. */
+    static void makeChannel(NotificationManager nm, String id, String name, String desc, int imp) {
+        if (nm.getNotificationChannel(id) != null) return;
+        NotificationChannel ch = new NotificationChannel(id, name, imp);
+        ch.setDescription(desc);
+        ch.enableVibration(true);
+        ch.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        ch.setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI,
+                new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build());
+        nm.createNotificationChannel(ch);
+    }
 
     public static void ensureChannel(Context c) {
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationManager nm = c.getSystemService(NotificationManager.class);
-            if (nm != null && nm.getNotificationChannel(CHANNEL_ID) == null) {
-                NotificationChannel ch = new NotificationChannel(
-                        CHANNEL_ID, "تنبيهات الأذكار", NotificationManager.IMPORTANCE_HIGH);
-                ch.setDescription("تنبيهات مواعيد الأذكار والتسبيح");
-                ch.enableVibration(true);
-                ch.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-                nm.createNotificationChannel(ch);
+            if (nm == null) return;
+            try { nm.deleteNotificationChannel(OLD_CHANNEL_ID); } catch (Exception ignored) {}
+            try { nm.deleteNotificationChannel(OLD_REVIEW_CHANNEL); } catch (Exception ignored) {}
+            makeChannel(nm, CHANNEL_ID, "تنبيهات الأذكار", "تنبيهات مواعيد الأذكار والتسبيح", NotificationManager.IMPORTANCE_HIGH);
+            makeChannel(nm, REVIEW_CHANNEL, "تذكير المراجعة", "تذكير يومي بمراجعة الدروس", NotificationManager.IMPORTANCE_HIGH);
+        }
+    }
+
+    /** What the system will actually do with a reminder: shown in the app so a silent phone setting is visible. */
+    public static String soundInfo(Context c) {
+        StringBuilder sb = new StringBuilder();
+        NotificationManager nm = c.getSystemService(NotificationManager.class);
+        if (nm == null) return "لا يمكن قراءة حالة الإشعارات.";
+        sb.append(nm.areNotificationsEnabled() ? "الإشعارات: مسموحة" : "الإشعارات: مغلقة للتطبيق");
+        if (Build.VERSION.SDK_INT >= 26) {
+            ensureChannel(c);
+            for (String id : new String[]{CHANNEL_ID, REVIEW_CHANNEL}) {
+                NotificationChannel ch = nm.getNotificationChannel(id);
+                if (ch == null) continue;
+                sb.append("\n").append(ch.getName()).append(": ")
+                  .append(ch.getImportance() == NotificationManager.IMPORTANCE_NONE ? "معطّلة"
+                        : ch.getSound() == null ? "بلا صوت (الإعداد في النظام)" : "بصوت")
+                  .append(ch.getImportance() >= NotificationManager.IMPORTANCE_DEFAULT ? "" : "، أهمية منخفضة");
             }
         }
+        android.media.AudioManager am = (android.media.AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
+        if (am != null) {
+            int mode = am.getRingerMode();
+            sb.append("\nوضع الرنين: ").append(mode == android.media.AudioManager.RINGER_MODE_NORMAL ? "عادي"
+                    : mode == android.media.AudioManager.RINGER_MODE_VIBRATE ? "اهتزاز فقط" : "صامت");
+            int v = am.getStreamVolume(android.media.AudioManager.STREAM_NOTIFICATION);
+            sb.append("\nصوت الإشعارات: ").append(v).append(" من ").append(am.getStreamMaxVolume(android.media.AudioManager.STREAM_NOTIFICATION));
+        }
+        int f = nm.getCurrentInterruptionFilter();
+        if (f != NotificationManager.INTERRUPTION_FILTER_ALL && f != NotificationManager.INTERRUPTION_FILTER_UNKNOWN)
+            sb.append("\nوضع عدم الإزعاج: مفعّل");
+        return sb.toString();
+    }
+
+    /** Posts a test notification now through the same channel and builder as a real reminder. */
+    public static void testNow(Context c) {
+        ensureChannel(c);
+        NotificationManager nm = c.getSystemService(NotificationManager.class);
+        if (nm != null) nm.notify("test".hashCode(), buildNotification(c, "تجربة الصوت", "test"));
     }
 
     static PendingIntent openIntent(Context c, String id) {
@@ -59,9 +110,6 @@ public class ReminderReceiver extends BroadcastReceiver {
     }
 
     static Notification buildNotification(Context c, String label, String id) {
-        Intent stop = new Intent(c, ReminderService.class).setAction(ReminderService.ACTION_STOP);
-        PendingIntent stopPi = PendingIntent.getService(c, id.hashCode() + 1, stop,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         Notification.Builder nb = Build.VERSION.SDK_INT >= 26
                 ? new Notification.Builder(c, CHANNEL_ID) : new Notification.Builder(c);
         nb.setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
@@ -70,8 +118,9 @@ public class ReminderReceiver extends BroadcastReceiver {
           .setContentIntent(openIntent(c, id))
           .setAutoCancel(true)
           .setVisibility(Notification.VISIBILITY_PUBLIC)
-          .setCategory(Notification.CATEGORY_ALARM)
-          .addAction(new Notification.Action.Builder(null, "إيقاف الصوت", stopPi).build());
+          .setCategory(Notification.CATEGORY_REMINDER)
+          .setOnlyAlertOnce(false);
+        if (Build.VERSION.SDK_INT < 26) nb.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE).setPriority(Notification.PRIORITY_HIGH);
         return nb.build();
     }
 
@@ -112,7 +161,7 @@ public class ReminderReceiver extends BroadcastReceiver {
     }
 
     public static final String REVIEW_ID = "review";
-    public static final String REVIEW_CHANNEL = "review_reminders";
+    public static final String REVIEW_CHANNEL = "review_reminders_v2";
 
     /** Daily review reminder: one notification with the device's default notification sound. No service, no speech. */
     private void onReview(Context c, String id) {
@@ -121,12 +170,7 @@ public class ReminderReceiver extends BroadcastReceiver {
             if (r == null) return;
             NotificationManager nm = c.getSystemService(NotificationManager.class);
             if (nm != null && nm.areNotificationsEnabled()) {
-                if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(REVIEW_CHANNEL) == null) {
-                    NotificationChannel ch = new NotificationChannel(
-                            REVIEW_CHANNEL, "تذكير المراجعة", NotificationManager.IMPORTANCE_DEFAULT);
-                    ch.setDescription("تذكير يومي بمراجعة الدروس");
-                    nm.createNotificationChannel(ch);
-                }
+                ensureChannel(c);
                 Notification.Builder nb = Build.VERSION.SDK_INT >= 26
                         ? new Notification.Builder(c, REVIEW_CHANNEL) : new Notification.Builder(c);
                 nb.setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
@@ -134,7 +178,7 @@ public class ReminderReceiver extends BroadcastReceiver {
                   .setContentText(r.optString("label", "وقت المراجعة"))
                   .setContentIntent(openIntent(c, id))
                   .setAutoCancel(true);
-                if (Build.VERSION.SDK_INT < 26) nb.setDefaults(Notification.DEFAULT_SOUND);
+                if (Build.VERSION.SDK_INT < 26) nb.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE).setPriority(Notification.PRIORITY_HIGH);
                 nm.notify(id.hashCode(), nb.build());
             }
         } catch (JSONException ignored) {}
@@ -169,18 +213,6 @@ public class ReminderReceiver extends BroadcastReceiver {
         ensureChannel(c);
         NotificationManager nm = c.getSystemService(NotificationManager.class);
         if (nm != null) nm.notify(id.hashCode(), buildNotification(c, label, id));
-
-        boolean serviceStarted = false;
-        try {
-            Intent svc = new Intent(c, ReminderService.class).putExtra(ReminderScheduler.EXTRA_ID, id);
-            if (Build.VERSION.SDK_INT >= 26) c.startForegroundService(svc);
-            else c.startService(svc);
-            serviceStarted = true;
-        } catch (Exception e) {
-            // Background start refused (e.g. inexact fallback without the exemption).
-            serviceStarted = false;
-        }
-        if (!serviceStarted) playTone(c); // degraded path: stop control is visible here (checked above), tone is short, no speech promise
 
         ReminderScheduler.schedule(c, id); // tomorrow's occurrence
     }

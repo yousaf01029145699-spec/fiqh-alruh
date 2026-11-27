@@ -44,6 +44,8 @@ public class MainActivity extends Activity {
     final class RemindBridge {
         /** Marker so the page can detect the native layer: !!window.__FIQH_REMIND */
         @JavascriptInterface public boolean available() { return true; }
+        @JavascriptInterface public String soundInfo() { return ReminderReceiver.soundInfo(MainActivity.this); }
+        @JavascriptInterface public void testSound() { ReminderReceiver.testNow(MainActivity.this); }
 
         /** "exact" | "inexact" | "disabled". */
         @JavascriptInterface public String schedule(String id, int hour, int minute, String label, boolean speak) {
