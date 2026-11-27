@@ -31154,7 +31154,7 @@ function underPoint(l,c,top){
  return h}
 function vKhilaf(l){
  if(!l.khilaf.length)return '<h2>الخلاف</h2><div class="card mut">هذا الدرس يعرض قرارات وفتاوى منسوبة إلى جهاتها، وليست أقوال المذاهب الأربعة، فلا يوجد جدول خلاف مذاهب هنا. الاختلاف بين الجهات مذكور في بطاقات الحكم الفقهي.</div>';
- let h='<h2>الخلاف بين المذاهب</h2><div class="banner">لا نرجّح هنا. تُعرض في كل مسألة المذاهب التي وُثّق لها قول فيها فقط. اختيارك للمذهب المفضل (في الإعدادات) يغيّر الترتيب فقط. مصدر كل مسألة تحتها. <details><summary>حدود التوثيق</summary>'+esc(SOURCE_NOTE)+'</details></div>';
+ let h='<h2>الخلاف بين المذاهب</h2>';
  const ord=orderedSchools();
  const mine=S.cfg.kmode==='mine'&&S.school!=='none';
  if(mine)h+='<div class="card mut">عرض مذهبك فقط ('+SCHOOLS[S.school].name+') مع بقية المذاهب تحت كل مسألة في «أقوال المذاهب الأخرى». غيّر ذلك من الإعدادات.</div>';
