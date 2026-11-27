@@ -25,6 +25,7 @@ function warnCol(o){o=o||S.cfg.colors[mode()];const w=[];const r1=ctr(colv('tx',
 const visW=w=>S.cfg.hide.indexOf(w.id)<0;
 function save(){const j=JSON.stringify(S);if(window.__FIQH_HOST){try{persist=!!window.__FIQH_HOST.save(j)}catch(e){persist=false}return}try{localStorage.setItem(KEY,j)}catch(e){persist=false}}
 const LESSONS=[];WORSHIPS.forEach(w=>(w.lessons||[]).forEach(l=>{l._w=w;LESSONS.push(l)}));
+let _kn=0;WORSHIPS.forEach(w=>(w.lessons||[]).forEach(l=>(l.khilaf||[]).forEach(k=>{k._n=++_kn})));
 const STATUSLINE=()=>{const r=WORSHIPS.filter(w=>w.status==='ready').map(w=>w.title),o=WORSHIPS.filter(w=>w.status!=='ready').map(w=>w.title);return 'دروس مفصلة: '+r.join('، ')+'.'+(o.length?' والباقي نظرات عامة: '+o.join('، ')+'.':'')};
 const lesson=id=>LESSONS.find(l=>l.id===id);
 const P=id=>S.prog[id]||(S.prog[id]={steps:{},quiz:null,opened:false});
@@ -142,7 +143,7 @@ function khCard(l,k,ord,mine,inl){
  ord=ord.filter(x=>kHas(k,x));if(!ord.length)return '';
  if(mine&&!kHas(k,S.school))mine=false;
  const cell=(k,s)=>'<b class="'+(s===S.school?'pref':'')+'">'+SCHOOLS[s].name+'</b><span class="'+(s===S.school?'pref':'')+'">'+esc(k.v[s])+'</span>';
- return '<div class="card has-acts'+(inl?' kin':'')+'">'+(inl?'':cardActs(l.id+'.k.'+k.id))+'<h3>'+esc(k.issue)+'</h3>'+(mine?'<div class="sch">'+cell(k,S.school)+'</div><details><summary>أقوال المذاهب الأخرى</summary><div class="sch">'+ord.filter(x=>x!==S.school).map(x=>cell(k,x)).join('')+'</div></details>':'<div class="sch">'+ord.map(x=>cell(k,x)).join('')+'</div>')+(k.note?'<div class="ev k">'+lk(k.note)+'</div>':'')+'</div>'}
+ return '<div class="card has-acts'+(inl?' kin':'')+'">'+(inl?'':cardActs(l.id+'.k.'+k.id))+'<h3><span class="kn" title="رقم المسألة">'+k._n+'</span>'+esc(k.issue)+'</h3>'+(mine?'<div class="sch">'+cell(k,S.school)+'</div><details><summary>أقوال المذاهب الأخرى</summary><div class="sch">'+ord.filter(x=>x!==S.school).map(x=>cell(k,x)).join('')+'</div></details>':'<div class="sch">'+ord.map(x=>cell(k,x)).join('')+'</div>')+(k.note?'<div class="ev k">'+lk(k.note)+'</div>':'')+'</div>'}
 function underPoint(l,c,top){
  let h='';
  if(c.ev&&c.ev.length){h+='<div class="uev"><h4>الدليل على هذه المسألة</h4>'+(S.cfg.ev?c.ev.map(id=>evCard(l.evidence.find(e=>e.id===id))).join(''):'<div class="card mut">الأدلة مخفية حسب إعداداتك.</div>')+'</div>'}
