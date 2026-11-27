@@ -199,3 +199,5 @@ body.dark .search input{background-color:rgba(19,33,27,.62)}
 .tgl{position:relative}.tgl::after{content:"";position:absolute;inset:-9px -4px}
 
 .under{margin:-4px 12px 10px;padding-inline-start:10px;border-inline-start:3px solid var(--gold,#b8923a)}.under h4{margin:8px 0 4px;font-size:.9rem;opacity:.8}.under .card{margin:6px 0}.allev>summary{cursor:pointer;padding:10px 0}
+
+.sharh{font-size:.92em;line-height:1.9;border-right:3px solid var(--gold,#b8923a);padding:6px 10px;margin:8px 0;background:rgba(184,146,58,.07)}
