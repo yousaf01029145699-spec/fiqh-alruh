@@ -225,3 +225,16 @@ body.th-contrast .card{border:2px solid #fff}
 .thbtn.on{border-color:var(--pri)}
 .thbtn .sw{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid rgba(128,128,128,.4)}
 .thbtn .sw i{flex:1}
+
+/* ===== glass home ===== */
+.hm{margin-bottom:12px}
+.hmrow{display:flex;gap:8px;margin-bottom:10px}
+.hmsearch{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:0 16px;border-radius:16px;border:1px solid var(--bd);background:var(--card);color:var(--mut);text-align:right;margin-bottom:10px}
+.hmday{border-radius:20px;padding:16px;margin-bottom:10px;border:1px solid var(--bd);background:var(--card)}
+.hmday h3{margin:8px 0 4px}.hmday .btn{margin-top:6px}
+.hmgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.hmgrid button{display:flex;flex-direction:column;gap:6px;text-align:right;min-height:84px;padding:14px;border-radius:18px;border:1px solid var(--bd);background:var(--card);color:var(--tx)}
+.hmgrid span{color:var(--mut);font-size:.85rem}
+.hmprog{border-radius:18px;padding:14px;border:1px solid var(--bd);background:var(--card)}
+body.th-glass .hmday,body.th-glass .hmgrid button,body.th-glass .hmprog,body.th-glass .hmsearch{background:linear-gradient(160deg,rgba(26,46,37,.92),rgba(16,29,23,.92));border:1px solid rgba(216,181,79,.28);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+body.th-glass .hmday{border-color:rgba(216,181,79,.5)}
