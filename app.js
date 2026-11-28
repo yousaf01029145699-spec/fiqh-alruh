@@ -53,6 +53,7 @@ function cleanObj(o){
  if(Array.isArray(o)){const r=[];for(const x of o){
    if(x&&typeof x==='object'&&!Array.isArray(x)){
     if(typeof x.t==='string'&&GAPTITLE.test(x.t))continue;
+    if(typeof x.t==='string'&&typeof x.d==='string'&&!(x.ref&&String(x.ref).trim())&&/لا يشمل هذا الدرس|لم يفصل هذا الدرس|لم يغطه هذا الدرس|ما لم يغطه|ما بقي في/.test(x.t+' '+x.d))continue;
     cleanObj(x);
     if('t' in x&&'d' in x&&!String(x.d).trim())continue;
     if('t' in x&&!String(x.t).trim())continue;
