@@ -87,7 +87,7 @@ function entries(l){const out=[],f=l.fiqh,M=l.meaning;
  add('mw','meaning',M.why,'المعنى');add('ms','meaning',M.symbols,'المعنى');add('mi','meaning',M.impact,'الأثر');
  l.steps.forEach(s=>out.push({id:l.id+'.step.'+s.n,lesson:l.id,tab:'steps',sec:'خطوة',title:s.name,text:s.action+' '+(s.dhikrNone?'':s.dhikr),ref:s.ref||''}));
  l.evidence.forEach(e=>out.push({id:l.id+'.e.'+e.id,lesson:l.id,tab:'fiqh',sec:'دليل',title:e.ref,text:e.text,ref:e.ref}));
- l.khilaf.forEach(k=>out.push({id:l.id+'.k.'+k.id,lesson:l.id,tab:'khilaf',sec:'خلاف',title:k.issue,text:SK.filter(x=>kHas(k,x)).map(x=>SCHOOLS[x].name+': '+k.v[x]).join(' | '),ref:''}));
+ l.khilaf.forEach(k=>out.push({id:l.id+'.k.'+k.id,lesson:l.id,tab:'khilaf',sec:'خلاف',title:k.issue,kv:k.v,note:k.note||'',text:SK.filter(x=>kHas(k,x)).map(x=>SCHOOLS[x].name+': '+k.v[x]).join(' | '),ref:''}));
  (l.fadail||[]).forEach(f=>out.push({id:l.id+'.f.'+f.id,lesson:l.id,tab:'fiqh',sec:'فضائل وتحذيرات',title:f.t,text:f.text,ref:f.ref}));
  l.mistakes.forEach(m=>out.push({id:l.id+'.x.'+m.id,lesson:l.id,tab:'fiqh',sec:'أخطاء شائعة',title:m.t,text:m.d,ref:''}));
  return out}
@@ -105,7 +105,7 @@ function lessonLens(){return lens}
 const cnt=l=>({rul:l.fiqh.conditions.length+l.fiqh.pillars.length+l.fiqh.obligations.length+l.fiqh.sunan.length+l.fiqh.nullifiers.length,men:l.meaning.why.length+l.meaning.symbols.length+l.meaning.impact.length});
 function lessonPct(l){const p=P(l.id);const done=Object.keys(p.steps).filter(k=>p.steps[k]).length;const tot=l.steps.length+1;return Math.round((done+(p.quiz?1:0))/tot*100)}
 /* views */
-function cardActs(id,title){return '<div class="acts"><button data-bm="'+id+'" class="'+(isBM(id)?'on':'')+'" aria-label="حفظ في المفضلة">'+(isBM(id)?'★':'☆')+'</button><button data-note="'+id+'" aria-label="إضافة ملاحظة">✎</button></div>'}
+function cardActs(id,title){return '<div class="acts"><button data-bm="'+id+'" class="'+(isBM(id)?'on':'')+'" aria-label="حفظ في المفضلة">'+(isBM(id)?'★':'☆')+'</button><button data-note="'+id+'" aria-label="إضافة ملاحظة">✎</button><button data-share="'+id+'" aria-label="مشاركة">⤴</button></div>'}
 function infoCard(l,c,secKey){return infoCard0(l,c,secKey)+(l.pt?'<div class="under">'+underPoint(l,c)+'</div>':'')}
 function infoCard0(l,c,secKey){const id=l.id+'.'+secKey+'.'+c.id;return '<div class="card has-acts" id="c-'+id.replace(/\./g,'_')+'">'+cardActs(id)+'<h3>'+esc(c.t)+(c.kind?' <span class="tag '+(c.kind==='تأمل'?'':'gold')+'">'+esc(c.kind)+'</span>':'')+'</h3><p>'+esc(c.d)+'</p>'+(c.ref?'<div class="ev">المصدر: '+lk(c.ref)+'</div>':'')+'</div>'}
 const GLOSS_SRC="الموسوعة الفقهية الكويتية: حكم (ج18 ص65-66) | فرض (ج32 ص95-96) | استحباب (ج3 ص214-215) | سنة (ج25 ص264-265) | ندب (ج40 ص128) | كراهة (ج34 ص221-222) | تحريم (ج10 ص205-206) | الحرام والمكروه عند الحنفية (واجب، ج42 ص330) | إباحة (ج1) | نفل (ج41 ص100-101)";
@@ -129,6 +129,7 @@ function vHome(){
  let h='<div class="card" style="background:var(--green,#0f4d3a);color:#fff;text-align:center;border:0;padding:10px"><p class="ar" style="font-size:1rem;line-height:1.7;margin:2px 0">الجنة تُطلب بالعمل، والنار تُتَّقى بالطاعة. فاحرص على فرضك، وزد من نوافلك، وابتعد عمّا حرّم الله.</p><div style="font-size:.7rem;opacity:.85">عبارة تذكيرية من إعداد التطبيق، وليست آية ولا حديثاً.</div></div>';
  if(last){const l=last;h+='<button class="card" style="width:100%;text-align:right" data-go="lesson/'+l.id+'"><span class="tag gold">أين توقفت؟</span><h3>'+esc(l.title)+'</h3><div class="mut">'+(S.last.tab==='steps'?'دليل الأداء، الخطوة '+AR(S.last.step+1)+' من '+AR(l.steps.length):'آخر ما فتحته: '+tabName(S.last.tab))+'</div><div class="bar"><i style="width:'+lessonPct(l)+'%"></i></div></button>'}
  else h+='<div class="card"><span class="tag gold">أين توقفت؟</span><p class="mut">لم تفتح درساً بعد. ابدأ بدرس الوضوء.</p><button class="btn pri" data-go="lesson/wudu">ابدأ الوضوء</button></div>';
+ h+='<div class="card"><div class="row"><button class="btn" data-go="mine">★ المفضلة ('+AR(S.bm.length)+') والملاحظات ('+AR(S.notes.length)+')</button><button class="btn" data-go="settings">مذهبك: '+(S.school!=='none'?SCHOOLS[S.school].name:'غير محدد')+'</button></div></div>';
  if(S.cfg.goal){const st=study();h+='<div class="card"><b>هدف اليوم:</b> '+AR(st.opened.length)+' من '+AR(S.cfg.goal)+' درس<div class="bar"><i style="width:'+Math.min(100,Math.round(st.opened.length/S.cfg.goal*100))+'%"></i></div></div>'}
  h+='<button class="card" style="width:100%;text-align:right" data-go="gloss"><span class="tag gold">مفتاح المصطلحات</span><h3>معنى الفرض والمندوب والمباح والمكروه والحرام</h3><div class="mut">افتحها مباشرة بضغطة واحدة</div></button>';h+='<h2>العبادات</h2><div class="grid">'+WORSHIPS.filter(visW).map(w=>{let tags,pct='';if(w.status==='ready'){const ls=w.lessons;const c=ls.reduce((a,l)=>({r:a.r+cnt(l).rul,m:a.m+cnt(l).men}),{r:0,m:0});tags='<span class="tag">'+AR(ls.length)+' درس</span><span class="tag">'+AR(c.r)+' بطاقة حكم</span><span class="tag">'+AR(c.m)+' معاني</span>';pct='<div class="bar"><i style="width:'+Math.round(ls.reduce((a,l)=>a+lessonPct(l),0)/ls.length)+'%"></i></div>'}else tags='<span class="tag">نظرة عامة فقط</span>';
  return '<button class="wcard" data-go="worship/'+w.id+'"><div class="ico">'+ico(w.icon)+'</div><h3>'+esc(w.title)+'</h3><div>'+tags+'</div>'+pct+'</button>'}).join('')+'</div>';
@@ -155,6 +156,7 @@ function vLesson(){
  S.last={lesson:l.id,tab:lens,step:stepIdx};save();
  const tabs=[['fiqh','الحكم الفقهي'],['meaning','المعنى والروح']];
  let h='<button class="back" data-go="worship/'+l._w.id+'">‹ '+esc(l._w.title)+'</button><h2 style="margin:0">'+esc(l.title)+'</h2>';
+ h+='<div class="schchip"><button class="chip '+(S.school!=='none'?'on':'')+'" data-go="'+(l.khilaf.length?'lesson/'+l.id+'/khilaf':'settings')+'">مذهبك: '+(S.school!=='none'?SCHOOLS[S.school].name:'غير محدد')+'</button></div>';
  h+='<div class="seg" role="tablist"><span class="pill" style="right:'+(tab==='meaning'?'50%':'4px')+'"></span>'+tabs.map(t=>'<button role="tab" data-lens="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'">'+t[1]+'</button>').join('')+'</div>';
  h+='<div class="sub">'+[['steps','دليل الأداء'],['khilaf','الخلاف بين المذاهب'],['quiz','اختبار قصير']].filter(t=>t[0]!=='khilaf'||l.khilaf.length).map(t=>'<button class="chip" data-go="lesson/'+l.id+'/'+t[0]+'">'+t[1]+'</button>').join('')+'</div>';
  const bk='<button class="back" data-go="lesson/'+l.id+'">‹ '+esc(l.title)+'</button>';
@@ -197,11 +199,15 @@ function underPoint(l,c,top){
 const AGR=/اتفق الفقهاء|باتفاق|اتفاقاً|اتفاقا|بإجماع|إجماع|متفق عليه|لا خلاف/;
 function agreeItems(l){const o=[];Object.keys(l.fiqh||{}).forEach(g=>{const a=l.fiqh[g];if(Array.isArray(a))a.forEach(x=>{if(x&&x.d&&AGR.test((x.t||'')+' '+x.d))o.push(x)})});return o}
 function agreeBlock(l){const a=agreeItems(l);if(!a.length)return '<div class="card mut">الاتفاق أولاً: لا توجد في هذا الدرس مسألة نُصّ في مصدرها صراحةً على اتفاق الفقهاء أو إجماعهم، فتبدأ المسائل الخلافية مباشرة.</div>';return '<h3>مواضع الاتفاق</h3><div class="card">'+a.map(x=>'<div class="ev k"><b>'+esc(x.t||'')+'</b><div>'+esc(x.d)+'</div>'+(x.ref?'<div class="mut">'+lk(x.ref)+'</div>':'')+'</div>').join('')+'</div><h3>مواضع الخلاف</h3>'}
+function khCtl(){const sc=S.school!=='none';
+ return '<div class="card kctl"><div class="mut">مذهبك</div><div class="chips fl">'+[['none','غير محدد']].concat(SK.map(k=>[k,SCHOOLS[k].name])).map(a=>'<button class="chip '+(S.school===a[0]?'on':'')+'" data-school="'+a[0]+'">'+a[1]+'</button>').join('')+'</div>'+
+ '<div class="mut" style="margin-top:6px">العرض</div><div class="chips"><button class="chip '+(S.cfg.kmode!=='mine'||!sc?'on':'')+'" data-cfgv="kmode:all">كل المذاهب</button><button class="chip '+(S.cfg.kmode==='mine'&&sc?'on':'')+'" data-cfgv="kmode:mine"'+(sc?'':' disabled')+'>مذهبي فقط</button></div>'+(sc?'':'<div class="mut">اختر مذهبك أولاً لتفعيل «مذهبي فقط».</div>')+'</div>'}
 function vKhilaf(l){
  if(!l.khilaf.length)return '<h2>الخلاف</h2><div class="card mut">هذا الدرس يعرض قرارات وفتاوى منسوبة إلى جهاتها، وليست أقوال المذاهب الأربعة، فلا يوجد جدول خلاف مذاهب هنا. الاختلاف بين الجهات مذكور في بطاقات الحكم الفقهي.</div>';
  let h='<h2>الخلاف بين المذاهب</h2>';
  const ord=orderedSchools();
  const mine=S.cfg.kmode==='mine'&&S.school!=='none';
+ h+=khCtl();
  if(mine)h+='<div class="card mut">عرض مذهبك فقط ('+SCHOOLS[S.school].name+') مع بقية المذاهب تحت كل مسألة في «أقوال المذاهب الأخرى». غيّر ذلك من الإعدادات.</div>';
  const cell=(k,s)=>'<b class="'+(s===S.school?'pref':'')+'">'+SCHOOLS[s].name+'</b><span class="'+(s===S.school?'pref':'')+'">'+esc(k.v[s])+'</span>';
  if(S.cfg.agree)h+=agreeBlock(l);
@@ -235,7 +241,7 @@ function vSit(){
  h+=list.map(s=>'<details id="d-'+s.id+'"><summary>'+esc(s.q)+'</summary><div class="has-acts" style="position:relative;padding-left:90px;padding-bottom:10px">'+cardActs('sit.'+s.id)+'<p><b>'+esc(s.a)+'</b></p><p class="mut">'+esc(s.d)+'</p><div class="ev">'+lk(s.ref)+'</div></div></details>').join('');
  return h}
 function vMine(){
- let h='<h2 style="margin-top:0">تأملاتي</h2><div class="seg" style="margin-top:0"><span class="pill" style="right:'+(mineTab==='notes'?'50%':'4px')+'"></span><button data-mt="bm" class="'+(mineTab==='bm'?'on':'')+'">المحفوظات ('+AR(S.bm.length)+')</button><button data-mt="notes" class="'+(mineTab==='notes'?'on':'')+'">ملاحظاتي ('+AR(S.notes.length)+')</button></div>';
+ let h='<h2 style="margin-top:0">محفوظاتي</h2><div class="seg" style="margin-top:0"><span class="pill" style="right:'+(mineTab==='notes'?'50%':'4px')+'"></span><button data-mt="bm" class="'+(mineTab==='bm'?'on':'')+'">المحفوظات ('+AR(S.bm.length)+')</button><button data-mt="notes" class="'+(mineTab==='notes'?'on':'')+'">ملاحظاتي ('+AR(S.notes.length)+')</button></div>';
  if(!persist)h+='<div class="banner">تنبيه: الحفظ الدائم غير متاح هنا (أو تجاوز الحد المسموح)، فما تكتبه يبقى حتى تغلق الصفحة فقط.</div>';
  if(mineTab==='bm'){
   h+='<button class="btn" data-go="lists" style="margin-bottom:10px">قوائم المسائل المهمة ('+AR(S.lists.length)+')</button>';
@@ -395,13 +401,13 @@ function vAdhkarSec(){
   return h}
  s.items.forEach((it,i)=>{
   const k=s.id+'|'+i,rem=S.adhkar.prog[k]==null?it.c:S.adhkar.prog[k],done=rem<=0,iRem=S.adhkar.rem['i:'+k]||{};
-  h+='<div class="card'+(done?' done':'')+'"><p class="dhikr">'+esc(it.t)+'</p>'
+  h+='<div class="card'+(done?' done':' tapc')+'" data-acard="'+k+'"><p class="dhikr">'+esc(it.t)+'</p>'
    +(it.f?'<p class="mut">'+esc(it.f)+'</p>':'')
    +metaCard(it)
    +'<div class="srow src"><div class="mut">'+esc(it.s)+(it.c>1?'، '+AR(it.c)+' مرّة':'')+'</div>'
    +'<button class="ibell'+(iRem.on?' on':'')+'" data-irem="'+s.id+'|'+i+'" aria-label="تنبيه يومي لهذا الذكر" aria-pressed="'+!!iRem.on+'">'+ico('bell')+'</button>'
    +(iRem.on?'<input type="time" dir="ltr" class="itime" data-iremtime="'+s.id+'|'+i+'" value="'+(iRem.hh!=null?pad2(iRem.hh)+':'+pad2(iRem.mm||0):'')+'" aria-label="وقت تنبيه هذا الذكر">':'')
-   +'<button class="btn'+(done?'':' pri')+'" data-aitem="'+s.id+'|'+i+'"'+(done?' disabled':'')+'>'+(done?'✓ تم الذكر':'قرأتها'+(it.c>1?' ('+AR(rem)+')':''))+'</button></div></div>'});
+   +'<button class="btn'+(done?'':' pri')+'" data-aitem="'+s.id+'|'+i+'"'+(done?' disabled':'')+'>'+(done?'✓ تم الذكر':'قرأتها'+(it.c>1?' ('+AR(rem)+')':''))+'</button>'+(done?'<button class="btn" data-aundo="'+k+'">تراجع</button>':'')+'</div>'+(done?'':'<div class="mut tapnote">اضغط على البطاقة للتسجيل</div>')+'</div>'});
  h+='<div class="card"><button class="btn" data-arsec="'+s.id+'">إعادة من البداية</button></div>';
  return h}
 
@@ -516,13 +522,23 @@ function vSettings(){
  const names=[['taharah','الطهارة'],['salah','الصلاة'],['zakah','الزكاة'],['siyam','الصيام'],['hajj','الحج والعمرة']];
  const ws=WORSHIPS.map(w=>[w.id,w.title]);
  h+=sec('رابعاً:','العبادات الظاهرة','list','<p class="mut">اختر الأقسام التي تريد رؤيتها في الرئيسية وقائمة العبادات.</p>'+ws.map(w=>'<div class="srow"><b>'+esc(w[1])+'</b><button class="tgl'+(S.cfg.hide.indexOf(w[0])<0?' on':'')+'" role="switch" aria-label="'+esc(w[1])+'" aria-checked="'+(S.cfg.hide.indexOf(w[0])<0)+'" data-sec="'+w[0]+'"><i></i></button></div>').join('')+soon('الأذكار والأدعية المتعلقة بالعبادات، وأحكام الجنائز','لم تُكتب دروسها بعد، فلا يوجد ما يُظهر أو يُخفى.'));
- h+=sec('خامساً:','الدراسة والمراجعة','pen','<div class="srow"><div><b>تقدمك</b><div class="mut">درسٌ فتحته: '+AR(done)+' من '+AR(LESSONS.length)+'. اختبارات أنهيتها: '+AR(quz)+'.</div></div></div><div class="srow"><div><b>المفضلة والملاحظات</b><div class="mut">'+AR(S.bm.length)+' محفوظة، '+AR(S.notes.length)+' ملاحظة. تجدها في «تأملاتي».</div></div><button class="btn" data-go="mine">فتح</button></div>'+(function(){const st=study();const goal=S.cfg.goal||0;const mins=Math.floor(st.secs/60);let h='<div class="srow"><div><b>الهدف اليومي</b><div class="mut">'+(goal?('اليوم: '+AR(st.opened.length)+' من '+AR(goal)+' '+(st.opened.length>=goal?'، اكتمل الهدف':'درساً')):'غير مضبوط')+'</div></div></div>';h+='<div class="row">'+[[0,'بلا هدف'],[1,'درس'],[2,'درسان'],[3,'٣'],[5,'٥']].map(g=>'<button class="chip '+(goal===g[0]?'on':'')+'" data-goal="'+g[0]+'">'+g[1]+'</button>').join('')+'</div>';h+='<div class="srow"><div><b>مدة القراءة اليوم</b><div class="mut">'+AR(mins)+' دقيقة تقريباً، تُحسب والتطبيق مفتوح ونشط، وتبدأ من صفر كل يوم.</div></div></div>';return h})()+'<h3>التذكير بالمراجعة</h3>'+revRows()+'<div class="srow"><div><b>قوائم مخصصة للمسائل المهمة</b><div class="mut">'+(S.lists.length?AR(S.lists.length)+' قائمة، فيها '+AR(S.lists.reduce((a,l)=>a+l.items.length,0))+' مسألة.':'لا قوائم بعد. أنشئ قائمة واجمع فيها مسائل الخلاف المهمة.')+'</div></div><button class="btn" data-go="lists">فتح</button></div>');
+ h+=sec('خامساً:','الدراسة والمراجعة','pen','<div class="srow"><div><b>تقدمك</b><div class="mut">درسٌ فتحته: '+AR(done)+' من '+AR(LESSONS.length)+'. اختبارات أنهيتها: '+AR(quz)+'.</div></div></div><div class="srow"><div><b>المفضلة والملاحظات</b><div class="mut">'+AR(S.bm.length)+' محفوظة، '+AR(S.notes.length)+' ملاحظة. تجدها في «محفوظاتي».</div></div><button class="btn" data-go="mine">فتح</button></div>'+(function(){const st=study();const goal=S.cfg.goal||0;const mins=Math.floor(st.secs/60);let h='<div class="srow"><div><b>الهدف اليومي</b><div class="mut">'+(goal?('اليوم: '+AR(st.opened.length)+' من '+AR(goal)+' '+(st.opened.length>=goal?'، اكتمل الهدف':'درساً')):'غير مضبوط')+'</div></div></div>';h+='<div class="row">'+[[0,'بلا هدف'],[1,'درس'],[2,'درسان'],[3,'٣'],[5,'٥']].map(g=>'<button class="chip '+(goal===g[0]?'on':'')+'" data-goal="'+g[0]+'">'+g[1]+'</button>').join('')+'</div>';h+='<div class="srow"><div><b>مدة القراءة اليوم</b><div class="mut">'+AR(mins)+' دقيقة تقريباً، تُحسب والتطبيق مفتوح ونشط، وتبدأ من صفر كل يوم.</div></div></div>';return h})()+'<h3>التذكير بالمراجعة</h3>'+revRows()+'<div class="srow"><div><b>قوائم مخصصة للمسائل المهمة</b><div class="mut">'+(S.lists.length?AR(S.lists.length)+' قائمة، فيها '+AR(S.lists.reduce((a,l)=>a+l.items.length,0))+' مسألة.':'لا قوائم بعد. أنشئ قائمة واجمع فيها مسائل الخلاف المهمة.')+'</div></div><button class="btn" data-go="lists">فتح</button></div>');
  h+=sec('سادساً:','الإشعارات','gear','<h3>تنبيهات الأذكار</h3>'+adhkarRemRows()+revRows());
  h+=sec('سابعاً:','القراءة','pen','<h3>حجم الخط</h3><div class="row">'+[[.9,'صغير'],[1,'عادي'],[1.15,'كبير'],[1.3,'أكبر']].map(f=>'<button class="chip '+(S.fs===f[0]?'on':'')+'" data-fs="'+f[0]+'">'+f[1]+'</button>').join('')+'</div><h3>نوع الخط</h3>'+chs('font',[['sans','عصري (IBM Plex)'],['naskh','نسخ (أميري)']],S.cfg.font,'data-cfgv')+'<h3>تباعد الأسطر</h3>'+chs('lh',[['1.6','ضيق'],['1.85','عادي'],['2.2','واسع']],String(S.cfg.lh),'data-cfgv')+'<h3>الوضع</h3><div class="row"><button class="chip '+(!S.dark?'on':'')+'" data-dark="0">فاتح</button><button class="chip '+(S.dark?'on':'')+'" data-dark="1">داكن</button></div>'+tg('comfy','وضع القراءة المريح','خلفية دافئة أخف على العين')+tg('sound','صوت الزجاج عند اللمس','نغمة زجاجية قصيرة عند الضغط على الأزرار والبطاقات')+tg('vib','الاهتزاز عند الأذكار','اهتزاز خفيف مع كل عدّة، واهتزاز أطول مع نغمة هادئة عند إتمام الذكر')+'<p class="mut">يمكنك تحديد أي نص ونسخه من الشاشة. أما زر المشاركة مع المصدر فلم يُبنَ، وإن نسخت مسألة فانسخ معها مصدرها المكتوب تحتها.</p>'+vColors());
  h+=sec('ثامناً:','الخصوصية والبيانات','gear','<p class="mut">لا يرسل التطبيق أي بيانات خارج جهازك، ولا يحتاج إنترنت.'+(persist?'':' متصفحك الحالي يمنع الحفظ الدائم.')+'</p><div class="srow"><b>مسح سجل القراءة</b><button class="btn" data-clr="hist">مسح</button></div><div class="srow"><b>مسح نتائج الاختبارات</b><button class="btn" data-clr="quiz">مسح</button></div><div class="srow"><b>حذف المفضلة</b><button class="btn" data-clr="bm">حذف</button></div><div class="srow"><b>حذف الملاحظات</b><button class="btn" data-clr="notes">حذف</button></div><div class="srow"><b>حذف كل البيانات المحفوظة</b><button class="btn" data-clr="all">حذف الكل</button></div><p class="mut">كل زر حذف يطلب ضغطة تأكيد ثانية.</p><h3>نسخة احتياطية</h3><p class="mut">لا تنتقل بياناتك بين الأجهزة، وتُحذف عند حذف التطبيق. اضغط «تجهيز النسخة» ثم انسخ النص واحفظه في مكان آمن (ملاحظات هاتفك مثلاً). لاسترجاعها الصق النص واضغط «استرجاع».</p><div class="row"><button class="btn" data-exp="1">تجهيز النسخة</button><button class="btn" data-imp="1">استرجاع</button></div><textarea id="bk" dir="ltr" rows="5" style="width:100%;margin-top:8px" placeholder="الصق النسخة هنا للاسترجاع"></textarea><p class="mut" id="bkmsg"></p>');
  h+=sec('تاسعاً:','المساعدة والتواصل','help','<details><summary>دليل الاستخدام</summary><p class="mut">من «العبادات» اختر عبادة ثم درساً. في الدرس: تبويب الحكم الفقهي، وتبويب المعنى والروح (تأمل منفصل عن الأحكام)، ودليل الأداء خطوة خطوة، والخلاف بين المذاهب، واختبار قصير. زر النجمة يحفظ البطاقة، والقلم يضيف ملاحظة. «مواقف سريعة» تربط مواقف الحياة بالأحكام.</p></details><details><summary>أسئلة شائعة</summary><p class="mut"><b>هل التطبيق فتوى؟</b> لا، هو مادة تعليمية موثّقة بمصادرها، فارجع لعالم في حالتك. <b>لماذا يختلف الحكم؟</b> لأن المذاهب تختلف، ونعرض كلاً بمصدره دون ترجيح. <b>لماذا تقول «لم يُقرأ»؟</b> يعني أن المصدر المقروء لم يذكر المسألة، ولا يعني أنها غير واجبة. <b>هل أحتاج إنترنت؟</b> لا.</p></details>'+'<details><summary>سياسة الخصوصية</summary><p class="mut">لا يجمع التطبيق بيانات شخصية ولا يرسل شيئاً من تلقاء نفسه. ما تكتبه من ملاحظات وقوائم وتقدم يُحفظ على جهازك فقط ويُحذف بحذف التطبيق أو من قسم الخصوصية.</p></details><details><summary>حول التطبيق</summary><p class="mut">فِقْهُ الرُّوح: تطبيق تعليمي. المصادر: الموسوعة الفقهية الكويتية (أغلب الدروس)، والفقه الإسلامي وأدلته للزحيلي (درس سجود السهو)، وآيات من api.alquran.cloud، وأحاديث من sunnah.com. موثّق بمصادره.</p></details>');
  h+='<div class="card"><button class="btn pri" data-defaults="1">استعادة الإعدادات الافتراضية</button><p class="mut">يعيد الخط والمذهب والعرض والأقسام إلى الأصل. لا يحذف محفوظاتك أو ملاحظاتك.</p></div>';
  return h}
+let searchF={kind:'all',school:'',bab:''};
+function fOK(e){if(searchF.kind==='khilaf'&&e.sec!=='خلاف')return false;
+ if(searchF.school&&!(e.sec==='خلاف'&&e.kv&&e.kv[searchF.school]))return false;
+ if(searchF.bab){const l=e.lesson&&lesson(e.lesson);if(!l||l._w.id!==searchF.bab)return false}return true}
+function hl(txt,toks){const raw=String(txt);let nm='',map=[];for(let i=0;i<raw.length;i++){const n=norm(raw[i]);for(let j=0;j<n.length;j++){nm+=n[j];map.push(i)}}
+ const rg=[];toks.forEach(t=>{if(!t)return;let k=0;while((k=nm.indexOf(t,k))>=0){rg.push([map[k],map[k+t.length-1]+1]);k+=t.length}});
+ if(!rg.length)return esc(raw);rg.sort((a,b)=>a[0]-b[0]);const m=[];rg.forEach(r=>{if(m.length&&r[0]<=m[m.length-1][1])m[m.length-1][1]=Math.max(m[m.length-1][1],r[1]);else m.push(r.slice())});
+ let o='',p=0;m.forEach(r=>{o+=esc(raw.slice(p,r[0]))+'<mark>'+esc(raw.slice(r[0],r[1]))+'</mark>';p=r[1]});return o+esc(raw.slice(p))}
+function snip(txt,toks){const raw=String(txt);if(raw.length<=140)return raw;let nm='',map=[];for(let i=0;i<raw.length;i++){const n=norm(raw[i]);for(let j=0;j<n.length;j++){nm+=n[j];map.push(i)}}
+ let at=-1;for(const t of toks){const k=nm.indexOf(t);if(k>=0){at=map[k];break}}if(at<0||at<60)return raw.slice(0,140)+'…';const st=Math.max(0,at-50);return '…'+raw.slice(st,st+140)+(st+140<raw.length?'…':'')}
 function searchAll(q0){
  const q=norm(q0.trim());if(!q)return[];
  const toks=q.split(/\s+/).filter(Boolean);
@@ -542,9 +558,10 @@ function searchAll(q0){
   return s+tw*8+xw*3;
  };
  let scored=[];
- ALL.forEach(e=>{const s=score(e);if(s>=0)scored.push([s,e])});
+ ALL.forEach(e=>{if(!fOK(e))return;const s=score(e);if(s>=0)scored.push([s,e])});
  if(!scored.length&&toks.length>1){
   ALL.forEach(e=>{
+   if(!fOK(e))return;
    const T=norm(e.title),L=norm(e.lt||''),X=norm(e.text+' '+e.ref);
    let s=0,hit=0;
    for(const t of toks){
@@ -561,10 +578,14 @@ function vSearch(){
  let h='<h2 style="margin-top:0">نتائج البحث</h2>';
  const res=searchAll(searchQ);
  const nq=norm(searchQ);const glh=['مفتاح','مصطلح','مندوب','مستحب','مباح','مكروه','حرام','معني الفرض'].some(w=>nq.includes(norm(w)));
+ const fch=(lab,on,att)=>'<button class="chip '+(on?'on':'')+'" '+att+'>'+lab+'</button>';
+ h+='<div class="chips fl">'+fch('الكل',searchF.kind==='all'&&!searchF.school&&!searchF.bab,'data-sf="reset"')+fch('الخلاف فقط',searchF.kind==='khilaf'&&!searchF.school,'data-sf="kind:khilaf"')+SK.map(k=>fch(SCHOOLS[k].name,searchF.school===k,'data-sf="school:'+k+'"')).join('')+'</div>';
+ h+='<div class="chips fl">'+WORSHIPS.map(w=>fch(esc(w.title),searchF.bab===w.id,'data-sf="bab:'+esc(w.id)+'"')).join('')+'</div>';
+ const stoks=norm(searchQ.trim()).split(/\s+/).filter(Boolean);
  h+='<div class="mut">'+AR(res.length)+' نتيجة لـ «'+esc(searchQ)+'»'+(res.length===60?' (أول ٦٠)':'')+'</div>';
  if(glh)h+='<button class="card" style="width:100%;text-align:right" data-go="gloss"><span class="tag gold">مفتاح المصطلحات</span><h3>معنى الفرض والمندوب والمباح والمكروه والحرام</h3></button>';
- if(!res.length)h+='<div class="card mut">لا نتائج. جرّب كلمة أقصر مثل: نية، سجود، صيام.</div>';
- h+=res.map(e=>'<button class="card" style="width:100%;text-align:right" data-open="'+esc(e.id)+'"><span class="tag">'+esc(e.lt)+'</span><span class="tag">'+esc(e.sec)+'</span><h3>'+esc(e.title)+'</h3><div class="mut">'+esc(e.text.slice(0,140))+(e.text.length>140?'…':'')+'</div></button>').join('');
+ if(!res.length)h+='<div class="card mut">لا نتائج. جرّب كلمة أقصر مثل: نية، سجود، صيام'+((searchF.kind!=='all'||searchF.school||searchF.bab)?'، أو اضغط «الكل» لإزالة التصفية':'')+'.</div>';
+ h+=res.map(e=>'<button class="card" style="width:100%;text-align:right" data-open="'+esc(e.id)+'"><span class="tag">'+esc(e.lt)+'</span><span class="tag">'+esc(e.sec)+'</span><h3>'+hl(e.title,stoks)+'</h3><div class="mut">'+hl(snip(e.text,stoks),stoks)+'</div></button>').join('');
  return h}
 function render(scroll){
  const m=$('#view');let h;const keepY=window.scrollY||0;const openSecs=[...m.querySelectorAll('details.sset')].map(d=>d.open);
@@ -583,6 +604,18 @@ function openEntry(id){
  lens=e.tab;const target='#lesson/'+e.lesson;
  if(curHash===target.replace(/^#/,''))render();else go('lesson/'+e.lesson);
  setTimeout(()=>{const el=document.getElementById('c-'+id.replace(/\./g,'_'));if(el)el.scrollIntoView({block:'center'})},80)}
+function doAdhkar(k){const sec0=k.split('|')[0],it=asec(sec0).items[+k.split('|')[1]];const cur=S.adhkar.prog[k]==null?it.c:S.adhkar.prog[k];if(cur>0){S.adhkar.prog[k]=cur-1;const fin=cur-1===0;if(fin){toast('تم');doneFx()}else vib(10);save();render();if(fin){const bb=document.querySelector('[data-acard="'+k+'"]');if(bb){bb.classList.add('adone');setTimeout(()=>bb.classList.remove('adone'),900)}}}}
+function doShare(id){const e=byId(id);if(!e)return;
+ const t=e.title+'\n'+e.text+(e.ref?'\n'+e.ref:'')+(e.note?'\n'+e.note:'')+'\n\nمن تطبيق فِقْهُ الرُّوح';
+ const H=window.__FIQH_REMIND;if(H&&typeof H.share==='function'){try{H.share(t);return}catch(x){}}
+ if(navigator.share){navigator.share({text:t}).catch(()=>{});return}
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>toast('تم نسخ النص مع المصدر'),()=>toast('تعذر النسخ'));return}
+ toast('المشاركة غير متاحة هنا')}
+function askSchool(){if(S.school!=='none'||S.askedSchool)return;S.askedSchool=true;save();
+ const sh=document.createElement(window.__FIQH_HOST?'dialog':'div');sh.className='sheet';
+ sh.innerHTML='<div role="dialog" aria-label="اختيار المذهب"><h3>ما مذهبك الفقهي؟</h3><p class="mut">اختياري. يعرض لك قول مذهبك أولاً في مسائل الخلاف، وتبقى أقوال المذاهب الأخرى متاحة. تغيّره في أي وقت من الإعدادات.</p><div class="chips wrap">'+SK.map(k=>'<button class="chip" data-ps="'+k+'">'+SCHOOLS[k].name+'</button>').join('')+'</div><div class="row" style="margin-top:8px"><button class="btn" id="psx">لاحقاً</button></div></div>';
+ document.body.appendChild(sh);if(window.__FIQH_HOST&&sh.showModal)sh.showModal();
+ sh.querySelector('#psx').onclick=()=>sh.remove();sh.onclick=ev=>{if(ev.target===sh)sh.remove();const b=ev.target.closest('[data-ps]');if(b){S.school=b.dataset.ps;save();sh.remove();render();toast('تم اختيار المذهب')}}}
 function noteSheet(ref){
  const e=ref==='free'?null:byId(ref);const sh=document.createElement(window.__FIQH_HOST?'dialog':'div');sh.className='sheet';
  sh.innerHTML='<div role="dialog" aria-label="ملاحظة"><h3>'+(e?'ملاحظة على: '+esc(e.title):'ملاحظة جديدة')+'</h3><textarea id="nt" maxlength="2000" placeholder="اكتب ملاحظتك هنا"></textarea><div class="row" style="margin-top:8px"><button class="btn pri" id="ns">حفظ</button><button class="btn" id="nc">إلغاء</button></div></div>';
@@ -590,12 +623,14 @@ function noteSheet(ref){
  sh.querySelector('#nc').onclick=()=>sh.remove();sh.onclick=ev=>{if(ev.target===sh)sh.remove()};
  sh.querySelector('#ns').onclick=()=>{const v=t.value.trim();if(!v){toast('اكتب شيئاً أولاً');return}S.notes.unshift({id:'n'+Date.now(),ts:Date.now(),text:v,ref,title:e?e.title:''});save();sh.remove();toast('تم حفظ الملاحظة');render()}}
 document.addEventListener('click',ev=>{
- const t=ev.target.closest('[data-go],[data-lens],[data-bm],[data-note],[data-step],[data-sp],[data-sdone],[data-opt],[data-qnext],[data-qretry],[data-cat],[data-catreset],[data-mt],[data-open],[data-ndel],[data-fs],[data-school],[data-dark],[data-reset],[data-settings],[data-exp],[data-imp],[data-cfg],[data-cfgv],[data-colreset],[data-sec],[data-clr],[data-defaults],[data-goal],[data-aitem],[data-arsec],[data-tb],[data-tbrst],[data-tbpick],[data-rem],[data-remfix],[data-remexact],[data-remperm],[data-irem],[data-myadd],[data-myedit],[data-mysave],[data-mycancel],[data-mydel],[data-mtbadd],[data-mtb],[data-mtbrst],[data-mtbpick],[data-mtbsel],[data-mtbedit],[data-mtbsave],[data-mtbcancel],[data-mtbdel]');
+ const t=ev.target.closest('[data-go],[data-lens],[data-sf],[data-acard],[data-aundo],[data-share],[data-bm],[data-note],[data-step],[data-sp],[data-sdone],[data-opt],[data-qnext],[data-qretry],[data-cat],[data-catreset],[data-mt],[data-open],[data-ndel],[data-fs],[data-school],[data-dark],[data-reset],[data-settings],[data-exp],[data-imp],[data-cfg],[data-cfgv],[data-colreset],[data-sec],[data-clr],[data-defaults],[data-goal],[data-aitem],[data-arsec],[data-tb],[data-tbrst],[data-tbpick],[data-rem],[data-remfix],[data-remexact],[data-remperm],[data-irem],[data-myadd],[data-myedit],[data-mysave],[data-mycancel],[data-mydel],[data-mtbadd],[data-mtb],[data-mtbrst],[data-mtbpick],[data-mtbsel],[data-mtbedit],[data-mtbsave],[data-mtbcancel],[data-mtbdel]');
  if(!t)return;const d=t.dataset;
  if(d.go!==undefined){if(d.go.startsWith('lesson/')&&R.r!=='lesson'){}if(d.go.startsWith('lesson/')&&d.go.split('/').length===2)stepIdx=stepIdx;go(d.go);return}
  if(d.lens){lens=d.lens;render();return}
- if(d.bm){const id=d.bm;const i=S.bm.findIndex(b=>b.id===id);if(i>=0){S.bm.splice(i,1);toast('أُزيل من المحفوظات')}else{let rec;if(id.startsWith('refl.')){const r=REFLECTIONS.find(x=>'refl.'+x.id===id);rec={id,sec:'معنى اليوم',title:r.t,text:r.d}}else{const e=byId(id);rec={id,sec:e.sec,title:e.title,text:e.text}}S.bm.unshift(rec);toast('تم الحفظ في تأملاتي')}save();render();return}
+ if(d.bm){const id=d.bm;const i=S.bm.findIndex(b=>b.id===id);if(i>=0){S.bm.splice(i,1);toast('أُزيل من المحفوظات')}else{let rec;if(id.startsWith('refl.')){const r=REFLECTIONS.find(x=>'refl.'+x.id===id);rec={id,sec:'معنى اليوم',title:r.t,text:r.d}}else{const e=byId(id);rec={id,sec:e.sec,title:e.title,text:e.text}}S.bm.unshift(rec);toast('تم الحفظ في محفوظاتي')}save();render();return}
  if(d.note){noteSheet(d.note);return}
+ if(d.share){doShare(d.share);return}
+ if(d.sf){const i=d.sf.indexOf(':'),k=i<0?d.sf:d.sf.slice(0,i),v=i<0?'':d.sf.slice(i+1);if(k==='reset')searchF={kind:'all',school:'',bab:''};else if(k==='kind')searchF.kind=searchF.kind===v&&!searchF.school?'all':v,searchF.school='';else if(k==='school'){searchF.school=searchF.school===v?'':v;searchF.kind=searchF.school?'khilaf':'all'}else if(k==='bab')searchF.bab=searchF.bab===v?'':v;render();return}
  if(d.step!==undefined){stepIdx=+d.step;render();return}
  if(d.sp){stepIdx+=+d.sp;render();return}
  if(d.sdone){const l=lesson(R.a),p=P(l.id);if(p.steps[d.sdone])delete p.steps[d.sdone];else{p.steps[d.sdone]=true;if(stepIdx<l.steps.length-1)stepIdx++}save();render();return}
@@ -642,7 +677,9 @@ document.addEventListener('click',ev=>{
  if(d.mycancel){myEditing=null;render();return}
  if(d.mysave){const it=S.adhkar.my.find(x=>x.u===d.mysave),ta=$('#myedit');if(it&&ta){const v=(ta.value||'').trim();if(v)it.t=v;else toast('الدعاء فارغ، لم يُحفظ');save()}myEditing=null;render();return}
  if(d.mydel){if(t.dataset.arm){const i=S.adhkar.my.findIndex(x=>x.u===d.mydel);if(i>=0){const it=S.adhkar.my[i];delete S.adhkar.rem['i:my|'+it.u];remSyncOne('i:my|'+it.u);S.adhkar.my.splice(i,1);save();render();toast('حُذف من دعائي')}}else{t.dataset.arm=1;t.textContent='اضغط للتأكيد'}return}
- if(d.aitem){const k=d.aitem,sec0=k.split('|')[0],it=asec(sec0).items[+k.split('|')[1]];const cur=S.adhkar.prog[k]==null?it.c:S.adhkar.prog[k];if(cur>0){S.adhkar.prog[k]=cur-1;const fin=cur-1===0;if(fin){toast('تم');doneFx()}else vib(10);save();render();if(fin){const bb=document.querySelector('[data-aitem="'+k+'"]'),cc=bb&&bb.closest('.card');if(cc){cc.classList.add('adone');setTimeout(()=>cc.classList.remove('adone'),900)}}}return}
+ if(d.aitem){doAdhkar(d.aitem);return}
+ if(d.acard){if(ev.target.closest('button,input,a,summary,details,select,textarea,label'))return;try{if(String(window.getSelection()))return}catch(x){}doAdhkar(d.acard);return}
+ if(d.aundo){S.adhkar.prog[d.aundo]=1;save();vib(10);render();toast('تم التراجع');return}
  if(d.arsec){Object.keys(S.adhkar.prog).forEach(k=>{if(k.startsWith(d.arsec+'|'))delete S.adhkar.prog[k]});save();render();return}
  if(d.tb){const s=asec('tasbih'),tb=S.adhkar.tasbih,it=s.items[tb.i];tb.n++;vib(12);let dn=false;if(tb.n>=it.c){toast('أتممت العدد');doneFx();tb.n=0;dn=true}save();const w=t.closest('.tbwrap');if(w){const num=w.querySelector('.tbnum'),fg=w.querySelector('.tbring-fg');if(num){if(tb.n===0)num.innerHTML='<i class="tbo"></i>';else num.textContent=AR(tb.n)}if(fg)fg.style.strokeDashoffset=(565.49*(1-tb.n/it.c)).toFixed(1);w.setAttribute('aria-label','زر التسبيح، العدد '+AR(tb.n)+' من '+AR(it.c));if(dn){w.classList.add('tbdone');setTimeout(()=>w.classList.remove('tbdone'),700)}}else render();return}
  if(d.tbrst){S.adhkar.tasbih.n=0;save();render();return}
@@ -671,14 +708,14 @@ function applyCfg(){document.body.classList.toggle('nodeco',S.cfg.deco===false);
 function applyTheme(){document.body.classList.toggle('dark',S.dark);applyCfg();$('#darkbtn').innerHTML=ico('moon');$('#darkbtn').setAttribute('aria-pressed',S.dark)}
 function init(){
  document.documentElement.style.setProperty('--fs',S.fs);
- $('#navbar').innerHTML=[['home','الرئيسية','home'],['worship','العبادات','list'],['adhkar','الأذكار','crescent'],['sit','مواقف سريعة','help'],['mine','تأملاتي','pen']].map(n=>'<button data-go="'+n[0]+'">'+ico(n[2])+n[1]+'</button>').join('');
+ $('#navbar').innerHTML=[['home','الرئيسية','home'],['worship','العبادات','list'],['adhkar','الأذكار','crescent'],['sit','مواقف سريعة','help'],['mine','محفوظاتي','pen']].map(n=>'<button data-go="'+n[0]+'">'+ico(n[2])+n[1]+'</button>').join('');
  ['click','input','scroll','keydown','touchstart'].forEach(e=>document.addEventListener(e,()=>{lastAct=Date.now()},{passive:true}));
  setInterval(()=>{if(document.visibilityState==='visible'&&Date.now()-lastAct<12e4){study().secs+=30;save()}},3e4);
  $('#setbtn').innerHTML=ico('gear')+'<span class="setlab">الإعدادات</span>';$('#setbtn').onclick=()=>go('settings');
  $('#darkbtn').onclick=()=>{S.dark=!S.dark;applyTheme();save();render()};
  const si=$('#q');si.addEventListener('input',()=>{searchQ=si.value;if(searchQ.trim().length>=1){if(R.r!=='search'){R.r='search';history.replaceState(null,'','#/search')}render()}else{go('home')}});
  setInterval(remTick,3e4);remSyncAll();revSync();
- applyCfg();applyTheme();parse();render()}
+ applyCfg();applyTheme();parse();render();setTimeout(askSchool,600)}
 
 /* حاسبة الفرائض: واجهة */
 const CS={h:{},madhhab:'jumhur',radd:true,v:{value:'',funeral:'',debts:'',will:''}};

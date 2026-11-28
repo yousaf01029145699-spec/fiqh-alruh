@@ -44,6 +44,18 @@ public class MainActivity extends Activity {
     final class RemindBridge {
         /** Marker so the page can detect the native layer: !!window.__FIQH_REMIND */
         @JavascriptInterface public boolean available() { return true; }
+        @JavascriptInterface public void share(String text) {
+            if (text == null) return;
+            final String t = text.length() > 6000 ? text.substring(0, 6000) : text;
+            runOnUiThread(new Runnable() { public void run() {
+                try {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.putExtra(Intent.EXTRA_TEXT, t);
+                    startActivity(Intent.createChooser(i, null));
+                } catch (Exception e) { }
+            } });
+        }
         @JavascriptInterface public String soundInfo() { return ReminderReceiver.soundInfo(MainActivity.this); }
         @JavascriptInterface public void testSound() { ReminderReceiver.testNow(MainActivity.this); }
 
