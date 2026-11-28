@@ -207,3 +207,21 @@ body.dark .search input{background-color:rgba(19,33,27,.62)}
 mark{background:#f4d35e;color:#1c2420;border-radius:3px;padding:0 2px}
 .chips.fl{margin:4px 0}.chip[disabled]{opacity:.45}.schchip{margin:4px 0}.kctl .chips{flex-wrap:wrap;overflow:visible}
 .card.tapc{cursor:pointer;-webkit-tap-highlight-color:rgba(197,155,39,.18)}.tapnote{font-size:.72rem;text-align:center;margin-top:4px}
+
+/* السمات */
+body.th-glass{--bg:#0B1411;--card:#12201A;--bd:#2c4a3c;--pri:#D8B54F;--acc:#E0BE62;--tx:#F2EFE9;--mut:#A9B5AE;--soft:#182a22;--onpri:#0B1411;--ok:#6fcf9a;--bad:#e58a78;background:radial-gradient(120% 60% at 85% -10%,rgba(40,110,80,.35),transparent 60%),radial-gradient(90% 50% at 0% 100%,rgba(216,181,79,.10),transparent 60%),#0B1411;background-attachment:fixed}
+body.th-glass .card{background:linear-gradient(160deg,rgba(26,46,37,.92),rgba(16,29,23,.92));border:1px solid rgba(216,181,79,.28);box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06)}
+body.th-glass header{background:rgba(11,20,17,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid rgba(216,181,79,.3)}
+body.th-glass nav{background:rgba(11,20,17,.86);border-top:1px solid rgba(216,181,79,.3)}
+body.th-parch{--bg:#F4ECD8;--card:#FBF5E6;--bd:#D9CBA6;--pri:#6B3F1D;--acc:#A8721A;--tx:#2B2118;--mut:#65553F;--soft:#EFE5CC;--onpri:#FFFFFF}
+body.th-navy{--bg:#0A1224;--card:#121C36;--bd:#25335A;--pri:#D4AF37;--acc:#E3C264;--tx:#EEF1F8;--mut:#9AA7C4;--soft:#17233F;--onpri:#0A1224;--ok:#6fcf9a;--bad:#e58a78}
+body.th-navy header{background:#0E1A33;color:var(--tx);border-bottom:1px solid var(--bd)}
+body.th-soft{--bg:#F3F6F4;--card:#FFFFFF;--bd:#D8E2DD;--pri:#2F6F5E;--acc:#9A7420;--tx:#22302B;--mut:#55645E;--soft:#E7EEEA;--onpri:#FFFFFF}
+body.th-contrast{--bg:#000000;--card:#0A0A0A;--bd:#FFFFFF;--pri:#FFD84D;--acc:#FFD84D;--tx:#FFFFFF;--mut:#E6E6E6;--soft:#1A1A1A;--onpri:#000000;--ok:#7dffb0;--bad:#ff9e8c}
+body.th-contrast header{background:#000;color:var(--tx);border-bottom:2px solid #fff}
+body.th-contrast .card{border:2px solid #fff}
+.thgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.thbtn{display:flex;flex-direction:column;gap:6px;align-items:stretch;padding:8px;border:2px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);text-align:right;font:inherit}
+.thbtn.on{border-color:var(--pri)}
+.thbtn .sw{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid rgba(128,128,128,.4)}
+.thbtn .sw i{flex:1}
