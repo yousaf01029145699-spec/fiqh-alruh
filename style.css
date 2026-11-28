@@ -238,3 +238,13 @@ body.th-contrast .card{border:2px solid #fff}
 .hmprog{border-radius:18px;padding:14px;border:1px solid var(--bd);background:var(--card)}
 body.th-glass .hmday,body.th-glass .hmgrid button,body.th-glass .hmprog,body.th-glass .hmsearch{background:linear-gradient(160deg,rgba(26,46,37,.92),rgba(16,29,23,.92));border:1px solid rgba(216,181,79,.28);box-shadow:0 4px 14px rgba(0,0,0,.35)}
 body.th-glass .hmday{border-color:rgba(216,181,79,.5)}
+
+header h1 small{display:block;font-size:.72rem;font-weight:400;opacity:.8;margin-top:2px}
+.hmsec{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 8px}.hmsec button{background:none;border:0;color:var(--pri);font-size:.85rem}
+.hmi{display:flex;width:36px;height:36px;border-radius:12px;align-items:center;justify-content:center;background:rgba(216,181,79,.12);border:1px solid rgba(216,181,79,.25);margin-bottom:4px}.hmi svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.6}
+body.th-glass header{background:transparent;background-image:none;border-bottom:0;box-shadow:none;color:var(--pri)}
+body.th-glass header h1{font-size:1.7rem;color:var(--pri)}
+body.th-glass .hmday .btn.pri{background:linear-gradient(180deg,#E8C976,#C9A24A);color:#0B1411;border:0;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+body.th-glass .hmday{border-radius:24px}
+body.th-glass nav{left:14px;right:14px;bottom:calc(10px + env(safe-area-inset-bottom));border-radius:28px;border:1px solid rgba(216,181,79,.3);padding-bottom:0}
+body.th-glass main{padding-bottom:96px}
