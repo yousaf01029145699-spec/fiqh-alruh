@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
 
         /** "exact" | "inexact" | "disabled". */
         @JavascriptInterface public String schedule(String id, int hour, int minute, String label, boolean speak) {
+            if (hour < 0 || hour > 23 || minute < 0 || minute > 59 || id == null || id.length() > 64) return "disabled";
             try {
                 JSONObject r = new JSONObject();
                 r.put("hour", hour);
